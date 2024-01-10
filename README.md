@@ -46,11 +46,13 @@ This will build the `slivka-bio` image and start all the services as defined in 
 
 ## Usage
 
-After starting the services, `slivka-bio` will be accessible via:
+After starting the services, the `slivka-bio` API documentation will be accessible via:
 
-- **URL:** `http://localhost:8080` (or the appropriate domain/IP address)
+- **URL:** `http://localhost:8080/api/` (or the appropriate domain/IP address)
 
 MongoDB is also started and configured to work with `slivka-bio`.
+
+For users looking to interact with `slivka-bio` from Python environments, including Jupyter notebooks, check out the [Python client](https://github.com/bartongroup/slivka-python-client) to get started.
 
 ## Contributing
 
