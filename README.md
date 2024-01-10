@@ -2,7 +2,7 @@
 # Slivka-Bio Docker Compose
 
 [![License](https://img.shields.io/github/license/bartongroup/slivka-bio-docker)](LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/bartongroup/slivka-bio-docker)]
+[![GitHub issues](https://img.shields.io/github/issues/bartongroup/slivka-bio-docker)](https://github.com/bartongroup/slivka-bio-docker/issues)
 
 This repository contains the Docker configuration for setting up `slivka-bio`.
 
