@@ -1,0 +1,18 @@
+---
+version: "0.3"
+
+directory.uploads: /app/media/uploads
+directory.jobs: /app/media/jobs
+directory.logs: /app/logs
+directory.services: ./services
+
+# server.host: 127.0.0.1:8000
+server.host: 0.0.0.0:8000
+server.uploads-path: /media/uploads
+server.jobs-path: /media/jobs
+
+local-queue.host: tcp://127.0.0.1:3397
+
+mongodb.host: mongo:27017
+mongodb.database: slivka-bio
+...
