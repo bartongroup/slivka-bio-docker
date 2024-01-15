@@ -1,0 +1,81 @@
+---
+slivka-version: 0.8.3
+name: MSAProbs
+description: MSAProbs is a well-established state-of-the-art multiple
+  sequence alignment algorithm for protein sequences. The design
+  of MSAProbs is based on a combination of pair hidden Markov models 
+  and partition functions to calculate posterior probabilities.
+author: Jorge González-Domı́nguez, Yongchao Liu, Juan Touriño,
+  Bertil Schmidt
+version: '0.9.7'
+license: GNU GPL ver. 3
+
+classifiers:
+- 'Topic :: Computational biology :: Sequence analysis'
+- 'Operation :: Analysis :: Sequence analysis :: Sequence alignment ::
+  Multiple sequence alignment'
+
+parameters:
+  input:
+    name: Input file
+    type: file
+    required: true
+    media-type: application/fasta
+
+  consistency:
+    name: Consistency repetitions
+    description: Number of passes of consistency transformation.
+    type: int
+    required: false
+    min: 0
+    max: 5
+    default: 2
+
+  iterative-refinement:
+    name: Interative refinaement
+    description: Number of iterative refinement passes.
+    type: int
+    required: false
+    min: 0
+    max: 1000
+    default: 10
+
+command:
+- msaprobs
+
+args:
+  consistency:
+    arg: -c $(value)
+  iterative-refinement:
+    arg: -ir $(value)
+  _out:
+    arg: -o $(value)
+    default: output.fa
+  _verbose:
+    arg: -v
+    default: 'present'
+  input:
+    arg: $(value)
+
+outputs:
+  alignment:
+    path: output.fa
+    media-type: application/fasta
+  log:
+    path: stdout
+    media-type: text/plain
+  error-log:
+    path: stderr
+    media-type: text/plain
+
+execution:
+  runners:
+    default:
+      type: SlivkaQueueRunner
+
+tests:
+- applicable-runners: ["default"]
+  parameters:
+    input: ${SLIVKA_HOME}/testdata/uniref50.fa
+  timeout: 5
+...
