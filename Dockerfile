@@ -5,7 +5,7 @@ FROM continuumio/miniconda3
 WORKDIR /app
 
 # Install supervisord
-RUN apt-get update && apt-get install -y supervisor
+RUN apt-get update && apt-get install -y supervisor default-jre-headless
 
 # Install slivka-bio using Conda
 RUN conda install anaconda-client -n base \
