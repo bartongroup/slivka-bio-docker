@@ -4,6 +4,7 @@ services:
   slivka-bio:
     build: .
     volumes:
+      - ./services/:/opt/conda/envs/compbio-services/var/slivka-bio/services/:ro
       - media:/app/media
     ports:
       - "8080:8000"
