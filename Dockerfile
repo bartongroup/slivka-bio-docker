@@ -17,6 +17,9 @@ COPY ./settings.yml /opt/conda/envs/compbio-services/var/slivka-bio/
 # Copy supervisord config
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Mark services directory as extrernally mounted volume
+VOLUME /opt/conda/envs/compbio-services/var/slivka-bio/services
+
 # Expose the port Slivka is running on
 EXPOSE 8000
 
