@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/bartongroup/slivka-bio-docker)](LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/bartongroup/slivka-bio-docker)](https://github.com/bartongroup/slivka-bio-docker/issues)
 
-This repository contains the Docker configuration for setting up `slivka-bio`.
+This repository contains the Docker configuration for setting up `slivka-bio`. You can find a pre-built image of [slivka-bio on Docker Hub](https://hub.docker.com/r/stuartmac/slivka-bio-docker).
 
 ## Overview
 
