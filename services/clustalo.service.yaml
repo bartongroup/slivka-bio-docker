@@ -1,0 +1,133 @@
+---
+slivka-version: 0.8.3
+name: ClustalO
+description: Clustal Omega is the latest addition to the Clustal family.
+  It offers a significant increase in scalability over previous versions,
+  allowing hundreds of thousands of sequences to be aligned in only 
+  a few hours. It will also make use of multiple processors, where present. 
+  In addition, the quality of alignments is superior to previous versions, 
+  as measured by a range of popular benchmarks. 
+author: Fabian Sievers, Andreas Wilm, David Dineen, Johannes Söding,
+  Michael Remmert
+version: '1.2.4'
+license: GNU GPL ver. 2
+
+classifiers:
+- 'Topic :: Computational biology :: Sequence analysis'
+- 'Operation :: Analysis :: Sequence analysis :: Sequence alignment :: Multiple
+  sequence alignment'
+
+parameters:
+  input:
+    name: Input file
+    type: file
+    required: true
+#    max-size: 4MB
+    media-type: application/fasta
+
+  dealign:
+    name: Dealign
+    description: Dealign input sequences
+    type: boolean
+    default: false
+    required: false
+
+  full-distance:
+    name: Full distance matrix
+    description: Use full distance matrix for guide-tree calculation (slow;
+      mBed is default)
+    type: boolean
+    default: false
+    required: false
+
+  full-distance-iteration:
+    name: Full distance matrix for each iteration
+    description: Use full distance matrix for guide-tree calculation during
+      iteration (mBed is default)
+    type: boolean
+    default: false
+    required: false
+
+  max-hmm-iterations:
+    name: Max Guide tree iterations
+    description: Maximum number of HMM iterations
+    type: int
+    min: 1
+    max: 100
+    default: 1
+
+  iterations:
+    name: Number of iterations (combined)
+    description: Number of (combined guide tree/HMM) iterations
+    type: int
+    min: 1
+    max: 100
+    default: 1
+
+  max-guidetree-iterations:
+    name: Max Guide tree iterations
+    description: Maximum guide tree iterations
+    type: int
+    min: 1
+    max: 100
+    default: 1
+
+command:
+- clustalo
+
+args:
+  input:
+    arg: --infile=$(value)
+    symlink: input.txt
+  dealign:
+    arg: --dealign
+  full-distance:
+    arg: --full
+  full-distance-iteration:
+    arg: --full-iter
+  max-hmm-iterations:
+    arg: --max-hmm-iterations=$(value)
+  iterations:
+    arg: --iter=$(value)
+  max-guidetree-iterations:
+    arg: --max-guidetree-iterations=$(value)
+  _const0:
+    arg: --outfile=output.txt
+    default: present
+  _const1:
+    arg: --outfmt=clustal
+    default: present
+  _const2:
+    arg: -v
+    default: present
+  _const3:
+    arg: --log=stat.log
+    default: present
+  _const4:
+    arg: --threads=1
+    default: present
+    
+outputs:
+  alignment:
+    path: output.txt
+    media-type: application/clustal
+  tree:
+    path: input.dnd
+  log:
+    path: stat.log
+    media-type: text/plain
+  error-log:
+    path: stderr
+    media-type: text/plain
+
+execution:
+  runners:
+    default:
+      type: SlivkaQueueRunner
+
+tests:
+- applicable-runners: ["default"]
+  parameters:
+    input: ${SLIVKA_HOME}/testdata/uniref50.fa
+  timeout: 5
+...

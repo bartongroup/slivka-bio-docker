@@ -1,0 +1,55 @@
+---
+slivka-version: 0.8.3
+name: GlobPlot
+author: Rune Linding
+version: '2.3'
+license: Academic Free License version 1.2
+
+classifiers:
+- 'Topic :: Computational biology :: Sequence analysis'
+- 'Operation :: Analysis :: Sequence analysis :: Protein sequence analysis'
+
+parameters:
+  input:
+    name: Input file
+    type: file
+    required: true
+    media-type: application/fasta
+
+command:
+- bash
+- ${SLIVKA_HOME}/bin/GlobPlot.sh
+
+args:
+  input:
+    arg: $(value)
+    symlink: input.fasta
+
+outputs:
+  raw-output:
+    path: output.txt
+    media-type: text/plain
+  jalview-annotations:
+    path: globplot.jvannot
+    media-type: application/jalview-annotations
+  jalview-features:
+    path: globplot.jvfeat
+    media-type: application/jalview-features
+  log:
+    path: stdout
+    media-type: text/plain
+  error-log:
+    path: stderr
+    media-type: text/plain
+
+execution:
+  runners:
+    default:
+      type: SlivkaQueueRunner
+
+tests:
+- applicable-runners: ["default"]
+  parameters:
+    input: ${SLIVKA_HOME}/testdata/uniref50.fa
+  timeout: 5
+...

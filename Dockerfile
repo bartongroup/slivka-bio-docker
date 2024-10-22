@@ -5,7 +5,7 @@ FROM continuumio/miniconda3
 WORKDIR /app
 
 # Install supervisord
-RUN apt-get update && apt-get install -y supervisor
+RUN apt-get update && apt-get install -y supervisor default-jre-headless
 
 # Install slivka-bio using Conda
 RUN conda install anaconda-client -n base \
@@ -16,6 +16,9 @@ COPY ./settings.yml /opt/conda/envs/compbio-services/var/slivka-bio/
 
 # Copy supervisord config
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Mark services directory as extrernally mounted volume
+VOLUME /opt/conda/envs/compbio-services/var/slivka-bio/services
 
 # Expose the port Slivka is running on
 EXPOSE 8000
