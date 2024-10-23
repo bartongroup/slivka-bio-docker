@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  slivka-bio:
+    image: stuartmac/slivka-bio-docker
+    volumes:
+      - media:/app/media
+    ports:
+      - "8080:8000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/slivka
+
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  jupyter:
+    image: jupyter/base-notebook:latest
+    volumes:
+      - ./demo:/home/jovyan
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    command: start-notebook.sh --NotebookApp.token=''
+
+volumes:
+  media:
+  mongo_data:
