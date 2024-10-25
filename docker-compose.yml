@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   slivka-bio:
-    image: stuartmac/slivka-bio-docker
+    image: stuartmac/slivka-bio
     volumes:
       - media:/app/media
     ports:
