@@ -38,7 +38,19 @@ To get started with `slivka-bio-docker`:
    docker-compose up -d
    ```
 
+  If you are working on Apple Silicon (or other arm64 architectures)
+  ```bash
+  docker-compose up -d -f docker-compose.arm64.yaml
+  ```
+
 This will build the `slivka-bio` image and start all the services as defined in the `docker-compose.yml`.
+
+### Jupyter Notebook Demo
+
+This command will start both slivka-bio and a JupyterLab server:
+
+   ```bash
+   docker-compose up -d -f docker-compose.demo.${$(uname -m):s/arm64/arm64.}yaml
 
 ## Configuration
 
