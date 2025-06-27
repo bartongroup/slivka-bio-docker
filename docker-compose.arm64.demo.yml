@@ -3,7 +3,7 @@ name: slivka-bio-demo
 services:
   slivka-bio:
     image: stuartmac/slivka-bio:latest
-    platform: linux/amd64
+    platform: linux/amd64  # silences warning on arm64 at startup
     volumes:
       - media:/app/media
     ports:
