@@ -1,3 +1,5 @@
+name: slivka-bio-dev
+
 services:
   slivka-bio:
     build: .

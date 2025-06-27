@@ -1,3 +1,5 @@
+name: slivka-bio-demo
+
 services:
   slivka-bio:
     image: stuartmac/slivka-bio:latest
