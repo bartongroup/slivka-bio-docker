@@ -51,6 +51,7 @@ This command will start both slivka-bio and a JupyterLab server:
 
    ```bash
    docker-compose up -d -f docker-compose.demo.${$(uname -m):s/arm64/arm64.}yaml
+   ```
 
 ## Configuration
 
