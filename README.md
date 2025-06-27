@@ -40,7 +40,7 @@ To get started with `slivka-bio-docker`:
 
   If you are working on Apple Silicon (or other arm64 architectures)
   ```bash
-  docker-compose up -d -f docker-compose.arm64.yaml
+  docker-compose -f docker-compose.arm64.yaml up -d
   ```
 
 This will build the `slivka-bio` image and start all the services as defined in the `docker-compose.yml`.
@@ -50,7 +50,10 @@ This will build the `slivka-bio` image and start all the services as defined in 
 This command will start both slivka-bio and a JupyterLab server:
 
    ```bash
-   docker-compose up -d -f docker-compose.demo.${$(uname -m):s/arm64/arm64.}yaml
+   docker-compose -f docker-compose.demo.yml up -d
+
+   # or for Apple Sillicon
+   docker-compose -f docker-compose.arm64.demo.yml up -d
    ```
 
 ## Configuration
