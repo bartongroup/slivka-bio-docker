@@ -1,8 +1,7 @@
-name: slivka-bio-dev
-
 services:
   slivka-bio:
-    build: .
+    image: stuartmac/slivka-bio:latest
+    platform: linux/amd64  # silences warning on arm64 at startup
     volumes:
       - media:/app/media
     ports:
@@ -13,7 +12,8 @@ services:
       - MONGODB_URI=mongodb://mongo:27017/slivka
 
   mongo:
-    image: mongo:latest
+    image: arm64v8/mongo:latest
+    platform: linux/arm64/v8
     volumes:
       - mongo_data:/data/db
     ports:
