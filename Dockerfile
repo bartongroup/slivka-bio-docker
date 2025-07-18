@@ -50,6 +50,9 @@ RUN apt-get update && apt-get install -y \
 COPY --from=installer /opt/slivka /opt/slivka
 COPY --from=installer /opt/conda/envs /opt/conda/envs
 
+# Copy slivka application configuration
+COPY slivka-bio-docker/config.yaml /opt/slivka/config.yaml
+
 # Create log directory for slivka
 RUN mkdir -p /var/log/slivka
 
