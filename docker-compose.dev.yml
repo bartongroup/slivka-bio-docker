@@ -2,11 +2,13 @@ name: slivka-bio-dev
 
 services:
   slivka-bio:
-    build: .
+    build:
+      context: ../       # One level up
+      dockerfile: slivka-bio-docker/Dockerfile
     volumes:
-      - media:/app/media
+      - media:/opt/slivka/media
     ports:
-      - "8080:8000"
+      - "4040:4040"
     depends_on:
       - mongo
     environment:
