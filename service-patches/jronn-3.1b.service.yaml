@@ -27,7 +27,8 @@ command:
 - run
 - -p
 - /opt/slivka/conda_env/jronn-3.1b
-- jronn
+- /opt/slivka/bin/JRonn.sh
+
 args:
   input:
     arg: -i=$(value)
@@ -48,6 +49,9 @@ outputs:
   output:
     path: output.txt
     media-type: text/plain
+  jalview-annotations:
+    path: jronn.jvannot
+    media-type: application/jalview-annotations
   log:
     path: stat.log
     media-type: text/plain

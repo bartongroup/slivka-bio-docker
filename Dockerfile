@@ -56,6 +56,11 @@ COPY slivka-bio-docker/config.yaml /opt/slivka/config.yaml
 # Copy slivka services runner configuration
 COPY slivka-bio-docker/_profiles.yaml /opt/slivka/services/_profiles.yaml
 
+# Add Jalview integration
+COPY slivka-bio-docker/scripts/jalview_parser.py /opt/slivka/scripts/jalview_parser.py
+COPY --chmod=755 slivka-bio-docker/bin/JRonn.sh /opt/slivka/bin/JRonn.sh
+COPY slivka-bio-docker/service-patches/jronn-3.1b.service.yaml /opt/slivka/services/
+
 # Create log directory for slivka
 RUN mkdir -p /var/log/slivka
 

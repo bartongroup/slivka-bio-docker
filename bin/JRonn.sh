@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-java -jar $SLIVKA_HOME/bin/bj3.0.4p-jronn.jar $*
+jronn $*
 
 returncode=$?
 if [ $returncode -ne 0 ]; then
