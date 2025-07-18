@@ -53,6 +53,9 @@ COPY --from=installer /opt/conda/envs /opt/conda/envs
 # Copy slivka application configuration
 COPY slivka-bio-docker/config.yaml /opt/slivka/config.yaml
 
+# Copy slivka services runner configuration
+COPY slivka-bio-docker/_profiles.yaml /opt/slivka/services/_profiles.yaml
+
 # Create log directory for slivka
 RUN mkdir -p /var/log/slivka
 

@@ -1,0 +1,5 @@
+default:
+  type: SlivkaQueueRunner
+
+default-gpu:
+  type: SlivkaQueueRunner
