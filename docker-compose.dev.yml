@@ -19,7 +19,7 @@ services:
     volumes:
       - mongo_data:/data/db
     ports:
-      - "27017:27017"
+      - "27018:27017"
 
 volumes:
   media:
