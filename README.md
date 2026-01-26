@@ -45,6 +45,16 @@ To get started with `slivka-bio-docker`:
 
 This will build the `slivka-bio` image and start all the services as defined in the `docker-compose.yml`.
 
+## Testing
+
+To test the configured services, access a terminal within your `slivka-bio` container and run:
+
+   ```bash
+   eval "$(micromamba shell hook --shell bash)"
+   micromamba activate slivka-installer
+   slivka test-services
+   ```
+
 ### Jupyter Notebook Demo
 
 This command will start both slivka-bio and a JupyterLab server:
