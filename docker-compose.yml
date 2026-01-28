@@ -1,11 +1,13 @@
+name: slivka-bio
+
 services:
   slivka-bio:
-    image: stuartmac/slivka-bio:latest
+    image: drsasp/slivka-bio:dev
+    pull_policy: always
     volumes:
-      - ./services/:/opt/conda/envs/compbio-services/var/slivka-bio/services/:ro
-      - media:/app/media
+      - media:/opt/slivka/media
     ports:
-      - "8080:8000"
+      - "4040:4040"
     depends_on:
       - mongo
     environment:
@@ -16,7 +18,7 @@ services:
     volumes:
       - mongo_data:/data/db
     ports:
-      - "27017:27017"
+      - "27018:27017"
 
 volumes:
   media:

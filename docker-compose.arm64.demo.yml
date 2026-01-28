@@ -1,29 +1,32 @@
+# For running on ARM64 hosts with amd64 emulation
+# Forces slivka-bio to use the amd64 image under emulation
+# Use docker-compose.demo.yml for native multi-platform support
+
 name: slivka-bio-demo
 
 services:
   slivka-bio:
-    image: stuartmac/slivka-bio:latest
-    platform: linux/amd64  # silences warning on arm64 at startup
+    image: drsasp/slivka-bio:dev
+    platform: linux/amd64
+    pull_policy: always
     volumes:
-      - media:/app/media
+      - media:/opt/slivka/media
     ports:
-      - "8080:8000"
+      - "4040:4040"
     depends_on:
       - mongo
     environment:
       - MONGODB_URI=mongodb://mongo:27017/slivka
 
   mongo:
-    image: arm64v8/mongo:latest
-    platform: linux/arm64/v8
+    image: mongo:latest
     volumes:
       - mongo_data:/data/db
     ports:
-      - "27017:27017"
+      - "27018:27017"
 
   jupyter:
     image: jupyter/base-notebook:latest
-    platform: linux/arm64
     volumes:
       - ./demo:/home/jovyan
     ports:
