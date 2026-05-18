@@ -55,7 +55,6 @@ To test the configured services, access a terminal within your `slivka-bio` cont
 The compose setup is split into:
 
 - [compose.yml](/Users/stuart/Work/Projects/Slivka/slivka-bio-docker/compose.yml): base services plus an optional `jupyter` profile
-- [compose.amd64.yml](/Users/stuart/Work/Projects/Slivka/slivka-bio-docker/compose.amd64.yml): forces `slivka-bio` to run as `linux/amd64`
 - [compose.build.yml](/Users/stuart/Work/Projects/Slivka/slivka-bio-docker/compose.build.yml): builds the image locally instead of pulling it
 
 Examples:
@@ -67,20 +66,11 @@ docker compose up -d
 # With Jupyter
 docker compose --profile jupyter up -d
 
-# Force amd64 emulation
-docker compose -f compose.yml -f compose.amd64.yml up -d
-
-# Force amd64 emulation + Jupyter
-docker compose -f compose.yml -f compose.amd64.yml --profile jupyter up -d
-
 # Build locally
 docker compose -f compose.yml -f compose.build.yml up -d --build
 
 # Build locally + Jupyter
 docker compose -f compose.yml -f compose.build.yml --profile jupyter up -d --build
-
-# Build locally + amd64 emulation + Jupyter
-docker compose -f compose.yml -f compose.build.yml -f compose.amd64.yml --profile jupyter up -d --build
 ```
 
 ## Configuration

@@ -1,3 +1,0 @@
-services:
-  slivka-bio:
-    platform: linux/amd64
