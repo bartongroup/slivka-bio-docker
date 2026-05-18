@@ -73,6 +73,8 @@ docker compose -f compose.yml -f compose.build.yml up -d --build
 docker compose -f compose.yml -f compose.build.yml --profile jupyter up -d --build
 ```
 
+*Compatibility note: earlier versions of these instructions suggested forcing `linux/amd64` emulation on Apple Silicon Macs as a workaround for tools that were not readily available on that platform. This is no longer possible due to a QEMU/ZMQ incompatibility in the Slivka local queue path.*
+
 ## Configuration
 
 - The `settings.yml` file contains the configuration for `slivka-bio`. Adjust it as necessary for your environment.
