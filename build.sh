@@ -3,7 +3,7 @@
 # Build script for slivka-bio-docker/Dockerfile
 # - Uses the parent directory as build context so COPY paths work
 # - Supports BuildKit and optional buildx multi-arch builds
-# - Keeps defaults aligned with docker-compose.dev.yml
+# - Keeps defaults aligned with compose.build.yml
 
 set -euo pipefail
 

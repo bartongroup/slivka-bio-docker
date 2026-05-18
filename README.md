@@ -32,18 +32,13 @@ To get started with `slivka-bio-docker`:
    cd slivka-bio-docker
    ```
 
-2. **Build and Run with Docker Compose**
+2. **Run with Docker Compose**
 
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
-  If you are working on Apple Silicon (or other arm64 architectures)
-  ```bash
-  docker-compose -f docker-compose.arm64.yaml up -d
-  ```
-
-This will build the `slivka-bio` image and start all the services as defined in the `docker-compose.yml`.
+This will start `slivka-bio` and MongoDB using [compose.yml](/Users/stuart/Work/Projects/Slivka/slivka-bio-docker/compose.yml).
 
 ## Testing
 
@@ -55,16 +50,38 @@ To test the configured services, access a terminal within your `slivka-bio` cont
    slivka test-services
    ```
 
-### Jupyter Notebook Demo
+### Compose Modes
 
-This command will start both slivka-bio and a JupyterLab server:
+The compose setup is split into:
 
-   ```bash
-   docker-compose -f docker-compose.demo.yml up -d
+- [compose.yml](/Users/stuart/Work/Projects/Slivka/slivka-bio-docker/compose.yml): base services plus an optional `jupyter` profile
+- [compose.amd64.yml](/Users/stuart/Work/Projects/Slivka/slivka-bio-docker/compose.amd64.yml): forces `slivka-bio` to run as `linux/amd64`
+- [compose.build.yml](/Users/stuart/Work/Projects/Slivka/slivka-bio-docker/compose.build.yml): builds the image locally instead of pulling it
 
-   # or for Apple Sillicon
-   docker-compose -f docker-compose.arm64.demo.yml up -d
-   ```
+Examples:
+
+```bash
+# Standard local test
+docker compose up -d
+
+# With Jupyter
+docker compose --profile jupyter up -d
+
+# Force amd64 emulation
+docker compose -f compose.yml -f compose.amd64.yml up -d
+
+# Force amd64 emulation + Jupyter
+docker compose -f compose.yml -f compose.amd64.yml --profile jupyter up -d
+
+# Build locally
+docker compose -f compose.yml -f compose.build.yml up -d --build
+
+# Build locally + Jupyter
+docker compose -f compose.yml -f compose.build.yml --profile jupyter up -d --build
+
+# Build locally + amd64 emulation + Jupyter
+docker compose -f compose.yml -f compose.build.yml -f compose.amd64.yml --profile jupyter up -d --build
+```
 
 ## Configuration
 
