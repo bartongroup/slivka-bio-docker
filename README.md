@@ -40,6 +40,12 @@ To get started with `slivka-bio-docker`:
 
 This will start `slivka-bio` and MongoDB using [compose.yml](/Users/stuart/Work/Projects/Slivka/slivka-bio-docker/compose.yml).
 
+Published ports in the current compose setup:
+
+- `slivka-bio`: `http://localhost:4040`
+- `mongo`: host port `27018` mapped to container port `27017`
+- `jupyter`: `http://localhost:8888` when the `jupyter` profile is enabled
+
 ## Testing
 
 To test the configured services, access a terminal within your `slivka-bio` container and run:
@@ -83,7 +89,7 @@ docker compose -f compose.yml -f compose.build.yml --profile jupyter up -d --bui
 
 After starting the services, the `slivka-bio` API documentation will be accessible via:
 
-- **URL:** `http://localhost:8080/api/` (or the appropriate domain/IP address)
+- **URL:** `http://localhost:4040/api/` (or the appropriate domain/IP address)
 
 MongoDB is also started and configured to work with `slivka-bio`.
 
