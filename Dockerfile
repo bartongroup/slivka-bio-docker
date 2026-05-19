@@ -34,7 +34,25 @@ COPY slivka-bio-installer/slivka-bio-installer /workspace/installer
 RUN eval "$(micromamba shell hook --shell bash)" && \
     micromamba activate slivka-installer && \
     cd /workspace/installer && \
-    python install.py --unattended --prefer-installer conda --overwrite --on-error skip /opt/slivka
+    python install.py \
+        --unattended \
+        --prefer-installer conda \
+        --overwrite \
+        --on-error skip \
+        --service disembl-1.4 \
+        --service aacon-1.1 \
+        --service clustalo-1.2.4 \
+        --service clustalw-2.1 \
+        --service example \
+        --service globplot-2.3 \
+        --service jronn-3.1b \
+        --service msaprobs-0.9.7 \
+        --service muscle-3.8.1551 \
+        --service muscle-5.1 \
+        --service probcons-1.12 \
+        --service rnaalifold-2.6.4 \
+        --service tcoffee-13.41.0 \
+        /opt/slivka
 
 # Production stage
 FROM mambaorg/micromamba:2.3.0-ubuntu24.04
