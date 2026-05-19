@@ -1,6 +1,6 @@
 services:
   slivka-bio:
-    image: drsasp/slivka-bio:${SLIVKA_BIO_TAG:-latest}
+    image: docker.io/drsasp/slivka-bio:${SLIVKA_BIO_TAG:-latest}
     ports:
       - "4040:4040"
     depends_on:
@@ -11,7 +11,7 @@ services:
       - media:/opt/slivka/media
 
   mongo:
-    image: mongo:latest
+    image: docker.io/library/mongo:latest
     volumes:
       - mongo_data:/data/db
     ports:
@@ -19,7 +19,7 @@ services:
 
   jupyter:
     profiles: ["jupyter"]
-    image: jupyter/base-notebook:latest
+    image: docker.io/jupyter/base-notebook:latest
     volumes:
       - ./demo:/home/jovyan
     ports:
