@@ -13,8 +13,8 @@ DOCKERFILE_PATH="$SCRIPT_DIR/Dockerfile"
 BUILD_CONTEXT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Defaults
-IMAGE_TAG="slivkabiodocker:dev"  # matches prior build attempt
-PLATFORM=""                    # e.g. linux/amd64,linux/arm64
+IMAGE_TAG="drsasp/slivka-bio:dev-local"  # matches compose.build.yml
+PLATFORM=""                              # e.g. linux/amd64,linux/arm64
 PUSH=false
 LOAD=false                      # for single-arch buildx load into local docker
 NO_CACHE=false
@@ -35,15 +35,26 @@ Options:
   -h, --help                 Show this help
 
 Examples:
-  # Native arch build using BuildKit (recommended)
-  $(basename "$0") -t slivkabiodocker:dev
+  # Native local build using BuildKit (matches compose.build.yml)
+  $(basename "$0")
 
-  # Multi-arch build and push using buildx
-  $(basename "$0") -t ghcr.io/owner/slivka-bio:latest \
+  # Native local build with an explicit tag
+  $(basename "$0") -t drsasp/slivka-bio:dev-local
+
+  # Multi-platform release build and push
+  $(basename "$0") -t drsasp/slivka-bio:latest \
     -p linux/amd64,linux/arm64 --push
 
-  # Single-arch buildx and load into local daemon
-  $(basename "$0") -t slivkabiodocker:arm64 -p linux/arm64 --load
+  # Immutable multi-platform release tag
+  $(basename "$0") -t drsasp/slivka-bio:vYYYY.MM \
+    -p linux/amd64,linux/arm64 --push
+
+  # Single-platform buildx build loaded into the local daemon
+  $(basename "$0") -t drsasp/slivka-bio:dev-local -p linux/arm64 --load
+
+Note:
+  Docker should pull/use the native platform image by default. Do not use
+  this script to create a forced amd64-emulation workflow for Apple Silicon.
 EOF
 }
 
@@ -73,6 +84,21 @@ done
 # Preflight checks
 command -v docker >/dev/null 2>&1 || { echo "Docker is required but not found in PATH" >&2; exit 1; }
 
+if [[ "$PUSH" == true && "$LOAD" == true ]]; then
+  echo "Use either --push or --load, not both" >&2
+  exit 1
+fi
+
+if [[ "$LOAD" == true && "$PLATFORM" == *,* ]]; then
+  echo "--load only supports a single target platform" >&2
+  exit 1
+fi
+
+if [[ "$PUSH" == true && -z "$PLATFORM" ]]; then
+  echo "Refusing to push without --platform. Use -p linux/amd64,linux/arm64 for release images." >&2
+  exit 1
+fi
+
 [[ -f "$DOCKERFILE_PATH" ]] || { echo "Dockerfile not found at $DOCKERFILE_PATH" >&2; exit 1; }
 [[ -d "$BUILD_CONTEXT/slivka-bio-docker" ]] || { echo "Expected directory not found: $BUILD_CONTEXT/slivka-bio-docker" >&2; exit 1; }
 [[ -d "$BUILD_CONTEXT/slivka-bio-installer/slivka-bio-installer" ]] || { echo "Expected directory not found: $BUILD_CONTEXT/slivka-bio-installer/slivka-bio-installer" >&2; exit 1; }
@@ -88,7 +114,14 @@ command -v docker >/dev/null 2>&1 || { echo "Docker is required but not found in
 echo "Dockerfile : $DOCKERFILE_PATH"
 echo "Build ctx  : $BUILD_CONTEXT"
 echo "Image tag  : $IMAGE_TAG"
-[[ -n "$PLATFORM" ]] && echo "Platforms  : $PLATFORM"
+if [[ -n "$PLATFORM" ]]; then
+  echo "Platforms  : $PLATFORM"
+else
+  echo "Platforms  : native Docker default"
+fi
+[[ "$PUSH" == true ]] && echo "Output     : push to registry"
+[[ "$LOAD" == true ]] && echo "Output     : load into local Docker daemon"
+[[ "$NO_CACHE" == true ]] && echo "Cache      : disabled"
 
 # Decide between docker build and buildx build
 USE_BUILDX=false
