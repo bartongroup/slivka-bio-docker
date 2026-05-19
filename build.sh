@@ -14,6 +14,7 @@ BUILD_CONTEXT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Defaults
 IMAGE_TAG="drsasp/slivka-bio:dev-local"  # matches compose.build.yml
+declare -a IMAGE_TAGS=("$IMAGE_TAG")
 PLATFORM=""                              # e.g. linux/amd64,linux/arm64
 PUSH=false
 LOAD=false                      # for single-arch buildx load into local docker
@@ -26,7 +27,7 @@ usage() {
 Usage: $(basename "$0") [options]
 
 Options:
-  -t, --tag <name:tag>       Image tag (default: ${IMAGE_TAG})
+  -t, --tag <name:tag>       Image tag (default: ${IMAGE_TAG}); can be used multiple times
   -p, --platform <list>      Target platform(s) for buildx (e.g. linux/arm64,linux/amd64)
       --push                 Push the image (requires buildx)
       --load                 Load the image into local docker (single-arch buildx)
@@ -41,12 +42,14 @@ Examples:
   # Native local build with an explicit tag
   $(basename "$0") -t drsasp/slivka-bio:dev-local
 
-  # Multi-platform release build and push
-  $(basename "$0") -t drsasp/slivka-bio:latest \
+  # Multi-platform release candidate build and push
+  $(basename "$0") -t drsasp/slivka-bio:installer-rc \
     -p linux/amd64,linux/arm64 --push
 
-  # Immutable multi-platform release tag
-  $(basename "$0") -t drsasp/slivka-bio:vYYYY.MM \
+  # Promote the same multi-platform build to immutable and latest tags
+  $(basename "$0") \
+    -t drsasp/slivka-bio:vYYYY.MM.DD \
+    -t drsasp/slivka-bio:latest \
     -p linux/amd64,linux/arm64 --push
 
   # Single-platform buildx build loaded into the local daemon
@@ -62,7 +65,12 @@ EOF
 while [[ ${1:-} ]]; do
   case "$1" in
     -t|--tag)
-      IMAGE_TAG="$2"; shift 2;;
+      if [[ "${#IMAGE_TAGS[@]}" -eq 1 && "${IMAGE_TAGS[0]}" == "$IMAGE_TAG" ]]; then
+        IMAGE_TAGS=()
+      fi
+      IMAGE_TAGS+=("$2")
+      IMAGE_TAG="${IMAGE_TAGS[0]}"
+      shift 2;;
     -p|--platform)
       PLATFORM="$2"; shift 2;;
     --push)
@@ -113,7 +121,14 @@ fi
 # Key path info
 echo "Dockerfile : $DOCKERFILE_PATH"
 echo "Build ctx  : $BUILD_CONTEXT"
-echo "Image tag  : $IMAGE_TAG"
+if [[ "${#IMAGE_TAGS[@]}" -eq 1 ]]; then
+  echo "Image tag  : ${IMAGE_TAGS[0]}"
+else
+  echo "Image tags :"
+  for tag in "${IMAGE_TAGS[@]}"; do
+    echo "  - $tag"
+  done
+fi
 if [[ -n "$PLATFORM" ]]; then
   echo "Platforms  : $PLATFORM"
 else
@@ -140,7 +155,10 @@ if [[ "$USE_BUILDX" == true ]]; then
     docker buildx create --name default --use >/dev/null
   fi
 
-  CMD=(docker buildx build -f "$DOCKERFILE_PATH" -t "$IMAGE_TAG")
+  CMD=(docker buildx build -f "$DOCKERFILE_PATH")
+  for tag in "${IMAGE_TAGS[@]}"; do
+    CMD+=(-t "$tag")
+  done
   [[ -n "$PLATFORM" ]] && CMD+=(--platform "$PLATFORM")
   [[ "$PUSH" == true ]] && CMD+=(--push)
   [[ "$LOAD" == true ]] && CMD+=(--load)
@@ -152,7 +170,10 @@ if [[ "$USE_BUILDX" == true ]]; then
 else
   # Enable BuildKit for better caching even without buildx
   export DOCKER_BUILDKIT=${DOCKER_BUILDKIT:-1}
-  CMD=(docker build -f "$DOCKERFILE_PATH" -t "$IMAGE_TAG")
+  CMD=(docker build -f "$DOCKERFILE_PATH")
+  for tag in "${IMAGE_TAGS[@]}"; do
+    CMD+=(-t "$tag")
+  done
   [[ "$NO_CACHE" == true ]] && CMD+=(--no-cache)
   if [[ "$BUILD_ARGS_SET" -eq 1 ]]; then
     CMD+=("${BUILD_ARGS[@]}")
@@ -163,4 +184,8 @@ fi
 echo "> ${CMD[*]}"
 "${CMD[@]}"
 
-echo "Build completed: $IMAGE_TAG"
+if [[ "${#IMAGE_TAGS[@]}" -eq 1 ]]; then
+  echo "Build completed: ${IMAGE_TAGS[0]}"
+else
+  echo "Build completed with tags: ${IMAGE_TAGS[*]}"
+fi
