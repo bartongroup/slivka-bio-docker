@@ -130,8 +130,9 @@ compose() {
   (cd "$PROJECT_DIR" && "${COMPOSE[@]}" "$@")
 }
 
-is_podman_compose() {
-  compose version 2>&1 | grep -qi 'podman-compose'
+is_podman_backend() {
+  docker version 2>&1 | grep -qi 'podman' \
+    || compose version 2>&1 | grep -qi 'podman'
 }
 
 compose_down() {
@@ -139,7 +140,7 @@ compose_down() {
 }
 
 compose_up() {
-  if is_podman_compose; then
+  if is_podman_backend; then
     compose up -d
   else
     compose up --pull never -d mongo slivka-bio
