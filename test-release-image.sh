@@ -141,7 +141,27 @@ compose_up() {
 }
 
 container_id() {
-  compose ps -q slivka-bio
+  local cid
+  local identity
+  cid="$(compose ps -q slivka-bio 2>/dev/null || true)"
+  if [[ -n "$cid" ]]; then
+    printf '%s\n' "$cid"
+    return
+  fi
+
+  # podman-compose 1.5 does not accept service names for `ps`; inspect all
+  # project containers and match the Slivka service by labels/name.
+  for cid in $(compose ps -q 2>/dev/null || true); do
+    identity="$(
+      docker inspect "$cid" --format '{{ index .Config.Labels "com.docker.compose.service" }} {{ index .Config.Labels "io.podman.compose.service" }} {{ .Name }}' 2>/dev/null || true
+    )"
+    if printf '%s\n' "$identity" | grep -Eq '(^|[ /_-])slivka-bio($|[ _-])'; then
+      printf '%s\n' "$cid"
+      return
+    fi
+  done
+
+  docker ps -q --filter name='slivka-bio' | head -n 1
 }
 
 wait_for_slivka_container() {
@@ -165,11 +185,17 @@ wait_for_slivka_container() {
 
 wait_for_slivka_processes() {
   local deadline=$((SECONDS + START_TIMEOUT))
+  local cid
   local running_count
 
   while (( SECONDS < deadline )); do
+    cid="$(container_id || true)"
+    if [[ -z "$cid" ]]; then
+      sleep 2
+      continue
+    fi
     running_count="$(
-      compose exec -T slivka-bio supervisorctl status 2>/dev/null \
+      docker exec "$cid" supervisorctl status 2>/dev/null \
         | grep -Ec '^slivka-(server|scheduler|local-queue)[[:space:]]+RUNNING' || true
     )"
     if [[ "$running_count" -eq 3 ]]; then
@@ -193,8 +219,10 @@ image_exists() {
 
 run_service_test() {
   local service="$1"
+  local cid
+  cid="$(container_id)"
 
-  compose exec -T slivka-bio sh -lc '
+  docker exec "$cid" sh -lc '
     if command -v slivka >/dev/null 2>&1; then
       slivka test-services "$1"
     else
@@ -205,8 +233,10 @@ run_service_test() {
 
 service_is_installed() {
   local service="$1"
+  local cid
+  cid="$(container_id)"
 
-  compose exec -T slivka-bio test -f "/opt/slivka/services/${service}.service.yaml"
+  docker exec "$cid" test -f "/opt/slivka/services/${service}.service.yaml"
 }
 
 classify_service_log() {
@@ -359,11 +389,17 @@ PY
 
   if ! wait_for_slivka_container; then
     echo "slivka-bio container did not start within ${START_TIMEOUT}s" >&2
-    compose logs --no-color slivka-bio > "$tag_output_dir/slivka-bio-startup.log" 2>&1 || true
+    cid="$(container_id || true)"
+    if [[ -n "$cid" ]]; then
+      docker logs "$cid" > "$tag_output_dir/slivka-bio-startup.log" 2>&1 || true
+    fi
     overall_status=1
   elif ! wait_for_slivka_processes; then
     echo "Slivka supervisor processes did not become ready within ${START_TIMEOUT}s" >&2
-    compose logs --no-color slivka-bio > "$tag_output_dir/slivka-bio-startup.log" 2>&1 || true
+    cid="$(container_id || true)"
+    if [[ -n "$cid" ]]; then
+      docker logs "$cid" > "$tag_output_dir/slivka-bio-startup.log" 2>&1 || true
+    fi
     overall_status=1
   fi
 
