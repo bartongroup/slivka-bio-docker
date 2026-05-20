@@ -130,6 +130,22 @@ compose() {
   (cd "$PROJECT_DIR" && "${COMPOSE[@]}" "$@")
 }
 
+is_podman_compose() {
+  compose version 2>&1 | grep -qi 'podman-compose'
+}
+
+compose_down() {
+  compose down -v --remove-orphans >/dev/null 2>&1 || true
+}
+
+compose_up() {
+  if is_podman_compose; then
+    compose up -d
+  else
+    compose up --pull never -d mongo slivka-bio
+  fi
+}
+
 container_id() {
   compose ps -q slivka-bio
 }
@@ -282,16 +298,18 @@ overall_status=0
 
 for image_ref in "${IMAGE_REFS[@]}"; do
   image_tag="${image_ref##*:}"
-  export SLIVKA_BIO_IMAGE="$image_ref"
+  image_repository="${image_ref%:*}"
+  export SLIVKA_BIO_IMAGE="$image_repository"
+  export SLIVKA_BIO_TAG="$image_tag"
   run_name="$(safe_name "$image_ref")"
 
   echo "=== Testing $image_ref ==="
 
-  compose down -v --remove-orphans >/dev/null
+  compose_down
 
   if [[ "$PULL_IMAGE" == true ]]; then
     echo "Pulling $image_ref"
-    if ! compose pull slivka-bio; then
+    if ! docker pull "$image_ref"; then
       echo "Failed to pull $image_ref" >&2
       platform=""
       platform_name="unknown-platform"
@@ -339,7 +357,7 @@ PY
   echo "Output: $summary_file"
 
   echo "Starting compose services"
-  if ! compose up --pull never -d mongo slivka-bio; then
+  if ! compose_up; then
     echo "Failed to start compose services for $image_ref" >&2
     overall_status=1
     continue
@@ -410,7 +428,7 @@ PY
   echo "Wrote $summary_file"
 
   if [[ "$KEEP_RUNNING" != true ]]; then
-    compose down -v --remove-orphans >/dev/null
+    compose_down
   fi
 done
 
