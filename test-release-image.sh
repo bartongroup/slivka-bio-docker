@@ -130,21 +130,14 @@ compose() {
   (cd "$PROJECT_DIR" && "${COMPOSE[@]}" "$@")
 }
 
-is_podman_backend() {
-  docker version 2>&1 | grep -qi 'podman' \
-    || compose version 2>&1 | grep -qi 'podman'
-}
-
 compose_down() {
   compose down -v --remove-orphans >/dev/null 2>&1 || true
 }
 
 compose_up() {
-  if is_podman_backend; then
-    compose up -d
-  else
-    compose up --pull never -d mongo slivka-bio
-  fi
+  # Keep this portable for Docker Compose and podman-compose. The app image is
+  # pulled or verified before startup; Compose may still fetch dependencies.
+  compose up -d
 }
 
 container_id() {
