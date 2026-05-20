@@ -3,5 +3,5 @@ services:
     build:
       context: ../
       dockerfile: slivka-bio-docker/Dockerfile
-    image: drsasp/slivka-bio:${SLIVKA_BIO_TAG:-dev-local}
+    image: slivka-bio:${SLIVKA_BIO_TAG:-dev-local}
     pull_policy: never

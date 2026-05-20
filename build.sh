@@ -13,7 +13,7 @@ DOCKERFILE_PATH="$SCRIPT_DIR/Dockerfile"
 BUILD_CONTEXT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Defaults
-IMAGE_TAG="drsasp/slivka-bio:dev-local"  # matches compose.build.yml
+IMAGE_TAG="slivka-bio:dev-local"  # matches compose.build.yml
 declare -a IMAGE_TAGS=("$IMAGE_TAG")
 PLATFORM=""                              # e.g. linux/amd64,linux/arm64
 PUSH=false
@@ -40,7 +40,7 @@ Examples:
   $(basename "$0")
 
   # Native local build with an explicit tag
-  $(basename "$0") -t drsasp/slivka-bio:dev-local
+  $(basename "$0") -t slivka-bio:dev-local
 
   # Multi-platform release candidate build and push
   $(basename "$0") -t drsasp/slivka-bio:installer-rc \
@@ -53,7 +53,7 @@ Examples:
     -p linux/amd64,linux/arm64 --push
 
   # Single-platform buildx build loaded into the local daemon
-  $(basename "$0") -t drsasp/slivka-bio:dev-local -p linux/arm64 --load
+  $(basename "$0") -t slivka-bio:dev-local -p linux/arm64 --load
 
 Note:
   Docker should pull/use the native platform image by default. Do not use

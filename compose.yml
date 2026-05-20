@@ -1,6 +1,6 @@
 services:
   slivka-bio:
-    image: docker.io/drsasp/slivka-bio:${SLIVKA_BIO_TAG:-latest}
+    image: ${SLIVKA_BIO_IMAGE:-docker.io/drsasp/slivka-bio:${SLIVKA_BIO_TAG:-latest}}
     ports:
       - "4040:4040"
     depends_on:

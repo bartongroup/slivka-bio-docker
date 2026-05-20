@@ -56,6 +56,35 @@ To test the configured services, access a terminal within your `slivka-bio` cont
    slivka test-services
    ```
 
+### Release Image Test Summary
+
+To test one or more images on the native Docker platform and record a release summary, pass the exact image reference including tag:
+
+   ```bash
+   ./test-release-image.sh --pull docker.io/drsasp/slivka-bio:latest
+   ```
+
+The script starts `mongo` and `slivka-bio` with Docker Compose, runs `slivka test-services <service>` for each expected service, and writes JSON plus per-service logs under `release-tests/<image>/<platform>/`. The `example` service is intentionally excluded from the default release set.
+
+To test a subset of services:
+
+   ```bash
+   ./test-release-image.sh \
+     --service clustalo-1.2.4 \
+     --service jronn-3.1b \
+     docker.io/drsasp/slivka-bio:latest
+   ```
+
+To test a locally built image without pulling from a registry:
+
+   ```bash
+   ./test-release-image.sh slivka-bio:dev-local
+   ```
+
+The local image reference must already exist in Docker. Use `--pull` only for registry images.
+
+Do not set `DOCKER_DEFAULT_PLATFORM` when using this script; release checks are intended to use the native platform selected by Docker.
+
 ### Compose Modes
 
 The compose setup is split into:
