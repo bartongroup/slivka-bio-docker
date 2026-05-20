@@ -142,7 +142,8 @@ compose_up() {
 
 container_id() {
   local cid
-  local identity
+  local service
+  local name
   cid="$(compose ps -q slivka-bio 2>/dev/null || true)"
   if [[ -n "$cid" ]]; then
     printf '%s\n' "$cid"
@@ -152,10 +153,11 @@ container_id() {
   # podman-compose 1.5 does not accept service names for `ps`; inspect all
   # project containers and match the Slivka service by labels/name.
   for cid in $(compose ps -q 2>/dev/null || true); do
-    identity="$(
-      docker inspect "$cid" --format '{{ index .Config.Labels "com.docker.compose.service" }} {{ index .Config.Labels "io.podman.compose.service" }} {{ .Name }}' 2>/dev/null || true
+    service="$(
+      docker inspect "$cid" --format '{{ index .Config.Labels "com.docker.compose.service" }} {{ index .Config.Labels "io.podman.compose.service" }}' 2>/dev/null || true
     )"
-    if printf '%s\n' "$identity" | grep -Eq '(^|[ /_-])slivka-bio($|[ _-])'; then
+    name="$(docker inspect "$cid" --format '{{ .Name }}' 2>/dev/null || true)"
+    if [[ " $service " == *" slivka-bio "* ]] || [[ "$name" =~ [_-]slivka-bio[_-][0-9]+$ ]]; then
       printf '%s\n' "$cid"
       return
     fi
