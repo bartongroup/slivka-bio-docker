@@ -1,8 +1,8 @@
 {
-  "image": "docker.io/drsasp/slivka-bio:v2026.05.19",
-  "image_tag": "v2026.05.19",
+  "image": "docker.io/drsasp/slivka-bio:v2026.05.18",
+  "image_tag": "v2026.05.18",
   "platform": "linux/arm64",
-  "tested_at": "2026-05-21T11:13:02.062380+00:00",
+  "tested_at": "2026-05-21T11:13:41.840955+00:00",
   "expected_services": [
     "disembl-1.4",
     "aacon-1.1",
@@ -54,7 +54,7 @@
       "reason": "service file is not installed",
       "ok_count": 0,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/disembl-1.4.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/disembl-1.4.log"
     },
     {
       "service": "aacon-1.1",
@@ -64,7 +64,7 @@
       "reason": "service test reported OK",
       "ok_count": 1,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/aacon-1.1.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/aacon-1.1.log"
     },
     {
       "service": "clustalo-1.2.4",
@@ -74,7 +74,7 @@
       "reason": "service test reported OK",
       "ok_count": 1,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/clustalo-1.2.4.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/clustalo-1.2.4.log"
     },
     {
       "service": "clustalw-2.1",
@@ -84,7 +84,7 @@
       "reason": "service test reported OK",
       "ok_count": 1,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/clustalw-2.1.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/clustalw-2.1.log"
     },
     {
       "service": "globplot-2.3",
@@ -94,7 +94,7 @@
       "reason": "service file is not installed",
       "ok_count": 0,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/globplot-2.3.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/globplot-2.3.log"
     },
     {
       "service": "jronn-3.1b",
@@ -104,7 +104,7 @@
       "reason": "service test reported OK",
       "ok_count": 1,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/jronn-3.1b.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/jronn-3.1b.log"
     },
     {
       "service": "msaprobs-0.9.7",
@@ -114,7 +114,7 @@
       "reason": "service test reported OK",
       "ok_count": 1,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/msaprobs-0.9.7.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/msaprobs-0.9.7.log"
     },
     {
       "service": "muscle-3.8.1551",
@@ -124,7 +124,7 @@
       "reason": "service test reported OK",
       "ok_count": 1,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/muscle-3.8.1551.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/muscle-3.8.1551.log"
     },
     {
       "service": "muscle-5.1",
@@ -134,7 +134,7 @@
       "reason": "service test reported OK",
       "ok_count": 1,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/muscle-5.1.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/muscle-5.1.log"
     },
     {
       "service": "probcons-1.12",
@@ -144,7 +144,7 @@
       "reason": "service test reported OK",
       "ok_count": 1,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/probcons-1.12.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/probcons-1.12.log"
     },
     {
       "service": "rnaalifold-2.6.4",
@@ -154,7 +154,7 @@
       "reason": "service test reported OK",
       "ok_count": 1,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/rnaalifold-2.6.4.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/rnaalifold-2.6.4.log"
     },
     {
       "service": "tcoffee-13.41.0",
@@ -164,7 +164,7 @@
       "reason": "service file is not installed",
       "ok_count": 0,
       "problem_count": 0,
-      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.19/linux-arm64/tcoffee-13.41.0.log"
+      "log": "release-tests/docker.io-drsasp-slivka-bio-v2026.05.18/linux-arm64/tcoffee-13.41.0.log"
     }
   ]
 }
