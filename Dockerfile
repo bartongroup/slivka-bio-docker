@@ -1,8 +1,9 @@
 # Multi-stage build for slivka-bio-installer
+ARG MICROMAMBA_IMAGE=mambaorg/micromamba:2.6.2-ubuntu24.04
 ARG SLIVKA_BIO_INSTALLER_REPO=https://github.com/bartongroup/slivka-bio-installer.git
 ARG SLIVKA_BIO_INSTALLER_REF=70122ece1a6c60fd74da71065302c87b532bfb9b
 
-FROM mambaorg/micromamba:2.3.0-ubuntu24.04 AS installer
+FROM ${MICROMAMBA_IMAGE} AS installer
 
 # Set working directory
 WORKDIR /workspace
@@ -66,7 +67,7 @@ RUN eval "$(micromamba shell hook --shell bash)" && \
     python -c "from pathlib import Path; from ruamel.yaml import YAML; yaml=YAML(); names={'muscle-3.8.1551.service.yaml': 'MUSCLEv3', 'muscle-5.1.service.yaml': 'MUSCLEv5'}; exec(\"for filename, name in names.items():\\n    path = Path('/opt/slivka/services') / filename\\n    data = yaml.load(path)\\n    data['name'] = name\\n    yaml.dump(data, path)\")"
 
 # Production stage
-FROM mambaorg/micromamba:2.3.0-ubuntu24.04
+FROM ${MICROMAMBA_IMAGE}
 
 ARG SLIVKA_BIO_INSTALLER_REPO
 ARG SLIVKA_BIO_INSTALLER_REF
