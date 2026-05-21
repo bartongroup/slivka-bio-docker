@@ -136,7 +136,7 @@ DEFAULT_INSTALLER_REF="$(sed -n 's/^ARG SLIVKA_BIO_INSTALLER_REF=//p' "$DOCKERFI
 
 # Quick check of required copied files referenced in Dockerfile
 [[ -f "$BUILD_CONTEXT/config.yaml" ]] || { echo "Missing: config.yaml" >&2; exit 1; }
-[[ -f "$BUILD_CONTEXT/_profiles.yaml" ]] || { echo "Missing: _profiles.yaml" >&2; exit 1; }
+[[ -f "$BUILD_CONTEXT/service-patches/_profiles.yaml" ]] || { echo "Missing: _profiles.yaml" >&2; exit 1; }
 [[ -f "$BUILD_CONTEXT/scripts/jalview_parser.py" ]] || { echo "Missing: scripts/jalview_parser.py" >&2; exit 1; }
 [[ -f "$BUILD_CONTEXT/bin/JRonn.sh" ]] || { echo "Missing: bin/JRonn.sh" >&2; exit 1; }
 [[ -f "$BUILD_CONTEXT/service-patches/jronn-3.1b.service.yaml" ]] || { echo "Missing: service-patches/jronn-3.1b.service.yaml" >&2; exit 1; }

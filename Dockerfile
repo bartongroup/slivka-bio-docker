@@ -89,7 +89,7 @@ COPY --from=installer /opt/conda/envs /opt/conda/envs
 COPY config.yaml /opt/slivka/config.yaml
 
 # Copy slivka services runner configuration
-COPY _profiles.yaml /opt/slivka/services/_profiles.yaml
+COPY service-patches/_profiles.yaml /opt/slivka/services/_profiles.yaml
 
 # Patch JRonn Jalview annotation generation until upstream parser handles JRonn output.
 COPY scripts/jalview_parser.py /opt/slivka/scripts/jalview_parser.py
