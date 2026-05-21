@@ -1,6 +1,6 @@
 # Multi-stage build for slivka-bio-installer
 ARG SLIVKA_BIO_INSTALLER_REPO=https://github.com/bartongroup/slivka-bio-installer.git
-ARG SLIVKA_BIO_INSTALLER_REF=3fed738a76bdd072cdc6db7f90bfe022b8b4e75d
+ARG SLIVKA_BIO_INSTALLER_REF=70122ece1a6c60fd74da71065302c87b532bfb9b
 
 FROM mambaorg/micromamba:2.3.0-ubuntu24.04 AS installer
 
@@ -42,11 +42,9 @@ RUN git clone --recurse-submodules "$SLIVKA_BIO_INSTALLER_REPO" /workspace/insta
 RUN eval "$(micromamba shell hook --shell bash)" && \
     micromamba activate slivka-installer && \
     cd /workspace/installer && \
-    python install.py \
-        --unattended \
-        --prefer-installer conda \
-        --overwrite \
-        --on-error skip \
+    python install_cli.py \
+        --non-interactive \
+        --conda-exe autodetect \
         --service disembl-1.4 \
         --service aacon-1.1 \
         --service clustalo-1.2.4 \
@@ -61,6 +59,11 @@ RUN eval "$(micromamba shell hook --shell bash)" && \
         --service rnaalifold-2.6.4 \
         --service tcoffee-13.41.0 \
         /opt/slivka
+
+# Keep Jalview service labels distinct while using upstream installer content.
+RUN eval "$(micromamba shell hook --shell bash)" && \
+    micromamba activate slivka-installer && \
+    python -c "from pathlib import Path; from ruamel.yaml import YAML; yaml=YAML(); names={'muscle-3.8.1551.service.yaml': 'MUSCLEv3', 'muscle-5.1.service.yaml': 'MUSCLEv5'}; exec(\"for filename, name in names.items():\\n    path = Path('/opt/slivka/services') / filename\\n    data = yaml.load(path)\\n    data['name'] = name\\n    yaml.dump(data, path)\")"
 
 # Production stage
 FROM mambaorg/micromamba:2.3.0-ubuntu24.04
@@ -88,7 +91,7 @@ COPY config.yaml /opt/slivka/config.yaml
 # Copy slivka services runner configuration
 COPY _profiles.yaml /opt/slivka/services/_profiles.yaml
 
-# Add Jalview integration
+# Patch JRonn Jalview annotation generation until upstream parser handles JRonn output.
 COPY scripts/jalview_parser.py /opt/slivka/scripts/jalview_parser.py
 COPY --chmod=755 bin/JRonn.sh /opt/slivka/bin/JRonn.sh
 COPY service-patches/jronn-3.1b.service.yaml /opt/slivka/services/

@@ -26,7 +26,7 @@ command:
 - /bin/micromamba
 - run
 - -p
-- /opt/slivka/conda_env/jronn-3.1b
+- /opt/slivka/conda_envs/jronn-3.1b
 - /opt/slivka/bin/JRonn.sh
 
 args:
