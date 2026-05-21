@@ -1,29 +1,25 @@
-name: slivka-bio-demo
-
 services:
   slivka-bio:
-    image: stuartmac/slivka-bio:latest
-    platform: linux/amd64  # silences warning on arm64 at startup
-    volumes:
-      - media:/app/media
+    image: ${SLIVKA_BIO_IMAGE:-docker.io/drsasp/slivka-bio}:${SLIVKA_BIO_TAG:-latest}
     ports:
-      - "8080:8000"
+      - "4040:4040"
     depends_on:
       - mongo
     environment:
       - MONGODB_URI=mongodb://mongo:27017/slivka
+    volumes:
+      - media:/opt/slivka/media
 
   mongo:
-    image: arm64v8/mongo:latest
-    platform: linux/arm64/v8
+    image: docker.io/library/mongo:latest
     volumes:
       - mongo_data:/data/db
     ports:
-      - "27017:27017"
+      - "27018:27017"
 
   jupyter:
-    image: jupyter/base-notebook:latest
-    platform: linux/arm64
+    profiles: ["jupyter"]
+    image: docker.io/jupyter/base-notebook:latest
     volumes:
       - ./demo:/home/jovyan
     ports:

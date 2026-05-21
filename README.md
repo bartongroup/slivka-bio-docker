@@ -32,29 +32,137 @@ To get started with `slivka-bio-docker`:
    cd slivka-bio-docker
    ```
 
-2. **Build and Run with Docker Compose**
+2. **Run with Docker Compose**
 
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
-  If you are working on Apple Silicon (or other arm64 architectures)
-  ```bash
-  docker-compose -f docker-compose.arm64.yaml up -d
-  ```
+This will start `slivka-bio` and MongoDB using [compose.yml](/Users/stuart/Work/Projects/Slivka/slivka-bio-docker/compose.yml).
 
-This will build the `slivka-bio` image and start all the services as defined in the `docker-compose.yml`.
+Published ports in the current compose setup:
 
-### Jupyter Notebook Demo
+- `slivka-bio`: `http://localhost:4040`
+- `mongo`: host port `27018` mapped to container port `27017`
+- `jupyter`: `http://localhost:8888` when the `jupyter` profile is enabled
 
-This command will start both slivka-bio and a JupyterLab server:
+## Testing
+
+To test the configured services, access a terminal within your `slivka-bio` container and run:
 
    ```bash
-   docker-compose -f docker-compose.demo.yml up -d
-
-   # or for Apple Sillicon
-   docker-compose -f docker-compose.arm64.demo.yml up -d
+   eval "$(micromamba shell hook --shell bash)"
+   micromamba activate slivka-installer
+   slivka test-services
    ```
+
+### Release Image Test Summary
+
+To test one or more images on the native Docker platform and record a release summary, pass the exact image reference including tag:
+
+   ```bash
+   ./test-release-image.sh --pull docker.io/drsasp/slivka-bio:latest
+   ```
+
+The script starts `mongo` and `slivka-bio` with Docker Compose, runs `slivka test-services <service>` for each expected service, and writes JSON plus per-service logs under `release-tests/<image>/<platform>/`. The `example` service is intentionally excluded from the default release set.
+
+To test a subset of services:
+
+   ```bash
+   ./test-release-image.sh \
+     --service clustalo-1.2.4 \
+     --service jronn-3.1b \
+     docker.io/drsasp/slivka-bio:latest
+   ```
+
+To test a locally built image without pulling from a registry:
+
+   ```bash
+   ./test-release-image.sh slivka-bio:dev-local
+   ```
+
+The local image reference must already exist in Docker. Use `--pull` only for registry images.
+
+Do not set `DOCKER_DEFAULT_PLATFORM` when using this script; release checks are intended to use the native platform selected by Docker.
+
+### Compose Modes
+
+The compose setup is split into:
+
+- [compose.yml](/Users/stuart/Work/Projects/Slivka/slivka-bio-docker/compose.yml): base services plus an optional `jupyter` profile
+- [compose.build.yml](/Users/stuart/Work/Projects/Slivka/slivka-bio-docker/compose.build.yml): builds the image locally instead of pulling it
+
+Examples:
+
+```bash
+# Standard local test
+docker compose up -d
+
+# With Jupyter
+docker compose --profile jupyter up -d
+
+# Build locally
+docker compose -f compose.yml -f compose.build.yml up -d --build
+
+# Build locally + Jupyter
+docker compose -f compose.yml -f compose.build.yml --profile jupyter up -d --build
+```
+
+### Local Image Builds
+
+The Docker image builds `slivka-bio` by cloning the installer repository inside
+the Docker build. The release build uses the Barton Group fork pinned in the
+Dockerfile:
+
+- `SLIVKA_BIO_INSTALLER_REPO`
+- `SLIVKA_BIO_INSTALLER_REF`
+
+This keeps the distribution build reproducible and makes divergence from the
+upstream installer traceable. For release builds, update the pinned installer
+`ARG` values in the Dockerfile and commit that change before pushing an image.
+
+For local development, build against a different fork, branch, tag, or commit by
+passing build arguments directly:
+
+```bash
+docker compose -f compose.yml -f compose.build.yml build \
+  --build-arg SLIVKA_BIO_INSTALLER_REPO=https://github.com/example/slivka-bio-installer.git \
+  --build-arg SLIVKA_BIO_INSTALLER_REF=feature-branch
+```
+
+The helper script exposes the same inputs:
+
+```bash
+./build.sh \
+  --installer-repo https://github.com/example/slivka-bio-installer.git \
+  --installer-ref feature-branch
+```
+
+The helper script refuses `--push` when installer overrides are supplied, so a
+pushed image's installer dependency remains reviewable from the committed
+Dockerfile.
+
+Built images include labels for the installer source/ref and the Docker build
+repository revision:
+
+- `org.bartongroup.slivka-bio.installer.repo`
+- `org.bartongroup.slivka-bio.installer.ref`
+- `org.opencontainers.image.revision`
+- `org.opencontainers.image.source`
+- `org.bartongroup.slivka-bio-docker.dirty`
+
+The helper script sets the Docker repository labels automatically from Git. It
+also refuses `--push` when the Docker repository has uncommitted changes, so
+release images are tied to a committed build recipe.
+
+To inspect labels on a local image:
+
+```bash
+docker image inspect slivka-bio:dev-local \
+  --format '{{ json .Config.Labels }}'
+```
+
+*Compatibility note: earlier versions of these instructions suggested forcing `linux/amd64` emulation on Apple Silicon Macs as a workaround for tools that were not readily available on that platform. This is no longer possible due to a QEMU/ZMQ incompatibility in the Slivka local queue path.*
 
 ## Configuration
 
@@ -64,7 +172,7 @@ This command will start both slivka-bio and a JupyterLab server:
 
 After starting the services, the `slivka-bio` API documentation will be accessible via:
 
-- **URL:** `http://localhost:8080/api/` (or the appropriate domain/IP address)
+- **URL:** `http://localhost:4040/api/` (or the appropriate domain/IP address)
 
 MongoDB is also started and configured to work with `slivka-bio`.
 
