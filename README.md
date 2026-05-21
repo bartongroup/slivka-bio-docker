@@ -108,6 +108,40 @@ docker compose -f compose.yml -f compose.build.yml up -d --build
 docker compose -f compose.yml -f compose.build.yml --profile jupyter up -d --build
 ```
 
+### Local Image Builds
+
+The Docker image builds `slivka-bio` by cloning the installer repository inside
+the Docker build. The release build uses the Barton Group fork pinned in the
+Dockerfile:
+
+- `SLIVKA_BIO_INSTALLER_REPO`
+- `SLIVKA_BIO_INSTALLER_REF`
+
+This keeps the distribution build reproducible and makes divergence from the
+upstream installer traceable. For release builds, update the pinned installer
+`ARG` values in the Dockerfile and commit that change before pushing an image.
+
+For local development, build against a different fork, branch, tag, or commit by
+passing build arguments directly:
+
+```bash
+docker compose -f compose.yml -f compose.build.yml build \
+  --build-arg SLIVKA_BIO_INSTALLER_REPO=https://github.com/example/slivka-bio-installer.git \
+  --build-arg SLIVKA_BIO_INSTALLER_REF=feature-branch
+```
+
+The helper script exposes the same inputs:
+
+```bash
+./build.sh \
+  --installer-repo https://github.com/example/slivka-bio-installer.git \
+  --installer-ref feature-branch
+```
+
+The helper script refuses `--push` when installer overrides are supplied, so a
+pushed image's installer dependency remains reviewable from the committed
+Dockerfile.
+
 *Compatibility note: earlier versions of these instructions suggested forcing `linux/amd64` emulation on Apple Silicon Macs as a workaround for tools that were not readily available on that platform. This is no longer possible due to a QEMU/ZMQ incompatibility in the Slivka local queue path.*
 
 ## Configuration

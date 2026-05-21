@@ -1,14 +1,20 @@
 # Multi-stage build for slivka-bio-installer
+ARG SLIVKA_BIO_INSTALLER_REPO=https://github.com/bartongroup/slivka-bio-installer.git
+ARG SLIVKA_BIO_INSTALLER_REF=3fed738a76bdd072cdc6db7f90bfe022b8b4e75d
+
 FROM mambaorg/micromamba:2.3.0-ubuntu24.04 AS installer
 
 # Set working directory
 WORKDIR /workspace
 
+ARG SLIVKA_BIO_INSTALLER_REPO
+ARG SLIVKA_BIO_INSTALLER_REF
+
 # Install system dependencies needed for the installer
 USER root
 RUN apt-get update && apt-get install -y \
+    ca-certificates \
     git \
-    # docker.io \
     && rm -rf /var/lib/apt/lists/*
 
 # Switch back to micromamba user for conda operations
@@ -24,8 +30,10 @@ RUN micromamba create -n slivka-installer -c conda-forge \
 
 # Clone the installer repository with submodules
 USER root
-# RUN git clone --recurse-submodules https://github.com/proteinverse/slivka-bio-installer.git /workspace/installer
-COPY slivka-bio-installer/slivka-bio-installer /workspace/installer
+RUN git clone --recurse-submodules "$SLIVKA_BIO_INSTALLER_REPO" /workspace/installer && \
+    cd /workspace/installer && \
+    git checkout "$SLIVKA_BIO_INSTALLER_REF" && \
+    git submodule update --init --recursive
 
 # `slivka-init` will not work if the directory already exists
 # RUN mkdir -p /opt/slivka
@@ -57,6 +65,12 @@ RUN eval "$(micromamba shell hook --shell bash)" && \
 # Production stage
 FROM mambaorg/micromamba:2.3.0-ubuntu24.04
 
+ARG SLIVKA_BIO_INSTALLER_REPO
+ARG SLIVKA_BIO_INSTALLER_REF
+
+LABEL org.bartongroup.slivka-bio.installer.repo=$SLIVKA_BIO_INSTALLER_REPO
+LABEL org.bartongroup.slivka-bio.installer.ref=$SLIVKA_BIO_INSTALLER_REF
+
 # Install runtime dependencies
 USER root
 RUN apt-get update && apt-get install -y \
@@ -69,21 +83,21 @@ COPY --from=installer /opt/slivka /opt/slivka
 COPY --from=installer /opt/conda/envs /opt/conda/envs
 
 # Copy slivka application configuration
-COPY slivka-bio-docker/config.yaml /opt/slivka/config.yaml
+COPY config.yaml /opt/slivka/config.yaml
 
 # Copy slivka services runner configuration
-COPY slivka-bio-docker/_profiles.yaml /opt/slivka/services/_profiles.yaml
+COPY _profiles.yaml /opt/slivka/services/_profiles.yaml
 
 # Add Jalview integration
-COPY slivka-bio-docker/scripts/jalview_parser.py /opt/slivka/scripts/jalview_parser.py
-COPY --chmod=755 slivka-bio-docker/bin/JRonn.sh /opt/slivka/bin/JRonn.sh
-COPY slivka-bio-docker/service-patches/jronn-3.1b.service.yaml /opt/slivka/services/
+COPY scripts/jalview_parser.py /opt/slivka/scripts/jalview_parser.py
+COPY --chmod=755 bin/JRonn.sh /opt/slivka/bin/JRonn.sh
+COPY service-patches/jronn-3.1b.service.yaml /opt/slivka/services/
 
 # Create log directory for slivka
 RUN mkdir -p /var/log/slivka
 
 # Copy supervisord configuration
-COPY slivka-bio-docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Create volume for services
 VOLUME /opt/slivka/services

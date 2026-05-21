@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # Build script for slivka-bio-docker/Dockerfile
-# - Uses the parent directory as build context so COPY paths work
+# - Uses this repository as the build context
+# - Clones slivka-bio-installer from a pinned URL/ref inside the Docker build
 # - Supports BuildKit and optional buildx multi-arch builds
 # - Keeps defaults aligned with compose.build.yml
 
@@ -9,8 +10,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOCKERFILE_PATH="$SCRIPT_DIR/Dockerfile"
-# Build context is one level up from slivka-bio-docker/
-BUILD_CONTEXT="$(cd "$SCRIPT_DIR/.." && pwd)"
+BUILD_CONTEXT="$SCRIPT_DIR"
 
 # Defaults
 IMAGE_TAG="slivka-bio:dev-local"  # matches compose.build.yml
@@ -21,6 +21,9 @@ LOAD=false                      # for single-arch buildx load into local docker
 NO_CACHE=false
 declare -a BUILD_ARGS=()
 BUILD_ARGS_SET=0
+INSTALLER_OVERRIDE=false
+SLIVKA_BIO_INSTALLER_REPO=""
+SLIVKA_BIO_INSTALLER_REF=""
 
 usage() {
   cat <<EOF
@@ -32,6 +35,8 @@ Options:
       --push                 Push the image (requires buildx)
       --load                 Load the image into local docker (single-arch buildx)
       --no-cache             Do not use cache
+      --installer-repo <url>  Installer repository URL
+      --installer-ref <ref>   Installer commit, tag, or branch
       --build-arg k=v        Add a build-arg (can be used multiple times)
   -h, --help                 Show this help
 
@@ -41,6 +46,11 @@ Examples:
 
   # Native local build with an explicit tag
   $(basename "$0") -t slivka-bio:dev-local
+
+  # Build against a different installer fork/ref
+  $(basename "$0") \
+    --installer-repo https://github.com/example/slivka-bio-installer.git \
+    --installer-ref feature-branch
 
   # Multi-platform release candidate build and push
   $(basename "$0") -t drsasp/slivka-bio:installer-rc \
@@ -79,6 +89,10 @@ while [[ ${1:-} ]]; do
       LOAD=true; shift;;
     --no-cache)
       NO_CACHE=true; shift;;
+    --installer-repo)
+      SLIVKA_BIO_INSTALLER_REPO="$2"; INSTALLER_OVERRIDE=true; shift 2;;
+    --installer-ref)
+      SLIVKA_BIO_INSTALLER_REF="$2"; INSTALLER_OVERRIDE=true; shift 2;;
     --build-arg)
       BUILD_ARGS+=("--build-arg" "$2"); BUILD_ARGS_SET=1; shift 2;;
     -h|--help)
@@ -107,20 +121,36 @@ if [[ "$PUSH" == true && -z "$PLATFORM" ]]; then
   exit 1
 fi
 
+if [[ "$PUSH" == true && "$INSTALLER_OVERRIDE" == true ]]; then
+  echo "Refusing to push with --installer-repo/--installer-ref overrides." >&2
+  echo "For release builds, update the pinned installer ARGs in Dockerfile and commit them." >&2
+  exit 1
+fi
+
 [[ -f "$DOCKERFILE_PATH" ]] || { echo "Dockerfile not found at $DOCKERFILE_PATH" >&2; exit 1; }
-[[ -d "$BUILD_CONTEXT/slivka-bio-docker" ]] || { echo "Expected directory not found: $BUILD_CONTEXT/slivka-bio-docker" >&2; exit 1; }
-[[ -d "$BUILD_CONTEXT/slivka-bio-installer/slivka-bio-installer" ]] || { echo "Expected directory not found: $BUILD_CONTEXT/slivka-bio-installer/slivka-bio-installer" >&2; exit 1; }
+
+DEFAULT_INSTALLER_REPO="$(sed -n 's/^ARG SLIVKA_BIO_INSTALLER_REPO=//p' "$DOCKERFILE_PATH" | head -n 1)"
+DEFAULT_INSTALLER_REF="$(sed -n 's/^ARG SLIVKA_BIO_INSTALLER_REF=//p' "$DOCKERFILE_PATH" | head -n 1)"
+[[ -n "$DEFAULT_INSTALLER_REPO" ]] || { echo "Missing SLIVKA_BIO_INSTALLER_REPO ARG in Dockerfile" >&2; exit 1; }
+[[ -n "$DEFAULT_INSTALLER_REF" ]] || { echo "Missing SLIVKA_BIO_INSTALLER_REF ARG in Dockerfile" >&2; exit 1; }
 
 # Quick check of required copied files referenced in Dockerfile
-[[ -f "$BUILD_CONTEXT/slivka-bio-docker/config.yaml" ]] || { echo "Missing: slivka-bio-docker/config.yaml" >&2; exit 1; }
-[[ -f "$BUILD_CONTEXT/slivka-bio-docker/_profiles.yaml" ]] || { echo "Missing: slivka-bio-docker/_profiles.yaml" >&2; exit 1; }
-[[ -f "$BUILD_CONTEXT/slivka-bio-docker/scripts/jalview_parser.py" ]] || { echo "Missing: slivka-bio-docker/scripts/jalview_parser.py" >&2; exit 1; }
-[[ -f "$BUILD_CONTEXT/slivka-bio-docker/bin/JRonn.sh" ]] || { echo "Missing: slivka-bio-docker/bin/JRonn.sh" >&2; exit 1; }
-[[ -f "$BUILD_CONTEXT/slivka-bio-docker/service-patches/jronn-3.1b.service.yaml" ]] || { echo "Missing: slivka-bio-docker/service-patches/jronn-3.1b.service.yaml" >&2; exit 1; }
+[[ -f "$BUILD_CONTEXT/config.yaml" ]] || { echo "Missing: config.yaml" >&2; exit 1; }
+[[ -f "$BUILD_CONTEXT/_profiles.yaml" ]] || { echo "Missing: _profiles.yaml" >&2; exit 1; }
+[[ -f "$BUILD_CONTEXT/scripts/jalview_parser.py" ]] || { echo "Missing: scripts/jalview_parser.py" >&2; exit 1; }
+[[ -f "$BUILD_CONTEXT/bin/JRonn.sh" ]] || { echo "Missing: bin/JRonn.sh" >&2; exit 1; }
+[[ -f "$BUILD_CONTEXT/service-patches/jronn-3.1b.service.yaml" ]] || { echo "Missing: service-patches/jronn-3.1b.service.yaml" >&2; exit 1; }
 
 # Key path info
 echo "Dockerfile : $DOCKERFILE_PATH"
 echo "Build ctx  : $BUILD_CONTEXT"
+if [[ "$INSTALLER_OVERRIDE" == true ]]; then
+  echo "Installer  : ${SLIVKA_BIO_INSTALLER_REPO:-$DEFAULT_INSTALLER_REPO}"
+  echo "Installer ref: ${SLIVKA_BIO_INSTALLER_REF:-$DEFAULT_INSTALLER_REF}"
+else
+  echo "Installer  : Dockerfile default ($DEFAULT_INSTALLER_REPO)"
+  echo "Installer ref: Dockerfile default ($DEFAULT_INSTALLER_REF)"
+fi
 if [[ "${#IMAGE_TAGS[@]}" -eq 1 ]]; then
   echo "Image tag  : ${IMAGE_TAGS[0]}"
 else
@@ -163,6 +193,8 @@ if [[ "$USE_BUILDX" == true ]]; then
   [[ "$PUSH" == true ]] && CMD+=(--push)
   [[ "$LOAD" == true ]] && CMD+=(--load)
   [[ "$NO_CACHE" == true ]] && CMD+=(--no-cache)
+  [[ -n "$SLIVKA_BIO_INSTALLER_REPO" ]] && CMD+=(--build-arg "SLIVKA_BIO_INSTALLER_REPO=$SLIVKA_BIO_INSTALLER_REPO")
+  [[ -n "$SLIVKA_BIO_INSTALLER_REF" ]] && CMD+=(--build-arg "SLIVKA_BIO_INSTALLER_REF=$SLIVKA_BIO_INSTALLER_REF")
   if [[ "$BUILD_ARGS_SET" -eq 1 ]]; then
     CMD+=("${BUILD_ARGS[@]}")
   fi
@@ -175,6 +207,8 @@ else
     CMD+=(-t "$tag")
   done
   [[ "$NO_CACHE" == true ]] && CMD+=(--no-cache)
+  [[ -n "$SLIVKA_BIO_INSTALLER_REPO" ]] && CMD+=(--build-arg "SLIVKA_BIO_INSTALLER_REPO=$SLIVKA_BIO_INSTALLER_REPO")
+  [[ -n "$SLIVKA_BIO_INSTALLER_REF" ]] && CMD+=(--build-arg "SLIVKA_BIO_INSTALLER_REF=$SLIVKA_BIO_INSTALLER_REF")
   if [[ "$BUILD_ARGS_SET" -eq 1 ]]; then
     CMD+=("${BUILD_ARGS[@]}")
   fi

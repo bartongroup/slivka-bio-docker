@@ -1,7 +1,7 @@
 services:
   slivka-bio:
     build:
-      context: ../
-      dockerfile: slivka-bio-docker/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     image: slivka-bio:${SLIVKA_BIO_TAG:-dev-local}
     pull_policy: never
