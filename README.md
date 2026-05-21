@@ -142,6 +142,26 @@ The helper script refuses `--push` when installer overrides are supplied, so a
 pushed image's installer dependency remains reviewable from the committed
 Dockerfile.
 
+Built images include labels for the installer source/ref and the Docker build
+repository revision:
+
+- `org.bartongroup.slivka-bio.installer.repo`
+- `org.bartongroup.slivka-bio.installer.ref`
+- `org.opencontainers.image.revision`
+- `org.opencontainers.image.source`
+- `org.bartongroup.slivka-bio-docker.dirty`
+
+The helper script sets the Docker repository labels automatically from Git. It
+also refuses `--push` when the Docker repository has uncommitted changes, so
+release images are tied to a committed build recipe.
+
+To inspect labels on a local image:
+
+```bash
+docker image inspect slivka-bio:dev-local \
+  --format '{{ json .Config.Labels }}'
+```
+
 *Compatibility note: earlier versions of these instructions suggested forcing `linux/amd64` emulation on Apple Silicon Macs as a workaround for tools that were not readily available on that platform. This is no longer possible due to a QEMU/ZMQ incompatibility in the Slivka local queue path.*
 
 ## Configuration

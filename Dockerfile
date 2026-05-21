@@ -2,6 +2,9 @@
 ARG MICROMAMBA_IMAGE=mambaorg/micromamba:2.6.2-ubuntu24.04
 ARG SLIVKA_BIO_INSTALLER_REPO=https://github.com/bartongroup/slivka-bio-installer.git
 ARG SLIVKA_BIO_INSTALLER_REF=70122ece1a6c60fd74da71065302c87b532bfb9b
+ARG SLIVKA_BIO_DOCKER_REVISION=unknown
+ARG SLIVKA_BIO_DOCKER_SOURCE=unknown
+ARG SLIVKA_BIO_DOCKER_DIRTY=unknown
 
 FROM ${MICROMAMBA_IMAGE} AS installer
 
@@ -71,9 +74,15 @@ FROM ${MICROMAMBA_IMAGE}
 
 ARG SLIVKA_BIO_INSTALLER_REPO
 ARG SLIVKA_BIO_INSTALLER_REF
+ARG SLIVKA_BIO_DOCKER_REVISION
+ARG SLIVKA_BIO_DOCKER_SOURCE
+ARG SLIVKA_BIO_DOCKER_DIRTY
 
+LABEL org.opencontainers.image.revision=$SLIVKA_BIO_DOCKER_REVISION
+LABEL org.opencontainers.image.source=$SLIVKA_BIO_DOCKER_SOURCE
 LABEL org.bartongroup.slivka-bio.installer.repo=$SLIVKA_BIO_INSTALLER_REPO
 LABEL org.bartongroup.slivka-bio.installer.ref=$SLIVKA_BIO_INSTALLER_REF
+LABEL org.bartongroup.slivka-bio-docker.dirty=$SLIVKA_BIO_DOCKER_DIRTY
 
 # Install runtime dependencies
 USER root

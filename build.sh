@@ -134,6 +134,26 @@ DEFAULT_INSTALLER_REF="$(sed -n 's/^ARG SLIVKA_BIO_INSTALLER_REF=//p' "$DOCKERFI
 [[ -n "$DEFAULT_INSTALLER_REPO" ]] || { echo "Missing SLIVKA_BIO_INSTALLER_REPO ARG in Dockerfile" >&2; exit 1; }
 [[ -n "$DEFAULT_INSTALLER_REF" ]] || { echo "Missing SLIVKA_BIO_INSTALLER_REF ARG in Dockerfile" >&2; exit 1; }
 
+GIT_REVISION="unknown"
+GIT_SOURCE="unknown"
+GIT_DIRTY="unknown"
+if git -C "$SCRIPT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  GIT_REVISION="$(git -C "$SCRIPT_DIR" rev-parse HEAD)"
+  GIT_SOURCE="$(git -C "$SCRIPT_DIR" config --get remote.origin.url || true)"
+  [[ -n "$GIT_SOURCE" ]] || GIT_SOURCE="unknown"
+  if [[ -n "$(git -C "$SCRIPT_DIR" status --porcelain)" ]]; then
+    GIT_DIRTY=true
+  else
+    GIT_DIRTY=false
+  fi
+fi
+
+if [[ "$PUSH" == true && "$GIT_DIRTY" == true ]]; then
+  echo "Refusing to push from a dirty working tree." >&2
+  echo "Commit or stash local changes before creating a release image." >&2
+  exit 1
+fi
+
 # Quick check of required copied files referenced in Dockerfile
 [[ -f "$BUILD_CONTEXT/config.yaml" ]] || { echo "Missing: config.yaml" >&2; exit 1; }
 [[ -f "$BUILD_CONTEXT/service-patches/_profiles.yaml" ]] || { echo "Missing: _profiles.yaml" >&2; exit 1; }
@@ -144,6 +164,9 @@ DEFAULT_INSTALLER_REF="$(sed -n 's/^ARG SLIVKA_BIO_INSTALLER_REF=//p' "$DOCKERFI
 # Key path info
 echo "Dockerfile : $DOCKERFILE_PATH"
 echo "Build ctx  : $BUILD_CONTEXT"
+echo "Source     : $GIT_SOURCE"
+echo "Revision   : $GIT_REVISION"
+echo "Dirty      : $GIT_DIRTY"
 if [[ "$INSTALLER_OVERRIDE" == true ]]; then
   echo "Installer  : ${SLIVKA_BIO_INSTALLER_REPO:-$DEFAULT_INSTALLER_REPO}"
   echo "Installer ref: ${SLIVKA_BIO_INSTALLER_REF:-$DEFAULT_INSTALLER_REF}"
@@ -195,6 +218,9 @@ if [[ "$USE_BUILDX" == true ]]; then
   [[ "$NO_CACHE" == true ]] && CMD+=(--no-cache)
   [[ -n "$SLIVKA_BIO_INSTALLER_REPO" ]] && CMD+=(--build-arg "SLIVKA_BIO_INSTALLER_REPO=$SLIVKA_BIO_INSTALLER_REPO")
   [[ -n "$SLIVKA_BIO_INSTALLER_REF" ]] && CMD+=(--build-arg "SLIVKA_BIO_INSTALLER_REF=$SLIVKA_BIO_INSTALLER_REF")
+  CMD+=(--build-arg "SLIVKA_BIO_DOCKER_REVISION=$GIT_REVISION")
+  CMD+=(--build-arg "SLIVKA_BIO_DOCKER_SOURCE=$GIT_SOURCE")
+  CMD+=(--build-arg "SLIVKA_BIO_DOCKER_DIRTY=$GIT_DIRTY")
   if [[ "$BUILD_ARGS_SET" -eq 1 ]]; then
     CMD+=("${BUILD_ARGS[@]}")
   fi
@@ -209,6 +235,9 @@ else
   [[ "$NO_CACHE" == true ]] && CMD+=(--no-cache)
   [[ -n "$SLIVKA_BIO_INSTALLER_REPO" ]] && CMD+=(--build-arg "SLIVKA_BIO_INSTALLER_REPO=$SLIVKA_BIO_INSTALLER_REPO")
   [[ -n "$SLIVKA_BIO_INSTALLER_REF" ]] && CMD+=(--build-arg "SLIVKA_BIO_INSTALLER_REF=$SLIVKA_BIO_INSTALLER_REF")
+  CMD+=(--build-arg "SLIVKA_BIO_DOCKER_REVISION=$GIT_REVISION")
+  CMD+=(--build-arg "SLIVKA_BIO_DOCKER_SOURCE=$GIT_SOURCE")
+  CMD+=(--build-arg "SLIVKA_BIO_DOCKER_DIRTY=$GIT_DIRTY")
   if [[ "$BUILD_ARGS_SET" -eq 1 ]]; then
     CMD+=("${BUILD_ARGS[@]}")
   fi
