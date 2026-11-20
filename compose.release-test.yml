@@ -1,0 +1,15 @@
+# Disposable release tests only: no published ports or application volumes.
+services:
+  slivka-bio:
+    image: ${SLIVKA_BIO_IMAGE}:${SLIVKA_BIO_TAG}
+    depends_on:
+      - mongo
+    volumes:
+      - media:/opt/slivka/media
+  mongo:
+    image: docker.io/library/mongo:7.0@sha256:41e8195b2791692695e1dc9bd21cd51d0a3af05fff8ace9304a5c1acf94f1ae1
+    volumes:
+      - mongo_data:/data/db
+volumes:
+  media:
+  mongo_data:

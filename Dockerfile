@@ -2,6 +2,7 @@
 ARG MICROMAMBA_IMAGE=mambaorg/micromamba:2.6.2-ubuntu24.04
 ARG SLIVKA_BIO_INSTALLER_REPO=https://github.com/bartongroup/slivka-bio-installer.git
 ARG SLIVKA_BIO_INSTALLER_REF=70122ece1a6c60fd74da71065302c87b532bfb9b
+ARG SLIVKA_VERSION=0.8.3b4
 ARG SLIVKA_BIO_DOCKER_REVISION=unknown
 ARG SLIVKA_BIO_DOCKER_SOURCE=unknown
 ARG SLIVKA_BIO_DOCKER_DIRTY=unknown
@@ -13,6 +14,7 @@ WORKDIR /workspace
 
 ARG SLIVKA_BIO_INSTALLER_REPO
 ARG SLIVKA_BIO_INSTALLER_REF
+ARG SLIVKA_VERSION
 
 # Install system dependencies needed for the installer
 USER root
@@ -29,7 +31,7 @@ RUN micromamba create -n slivka-installer -c conda-forge \
     python=3.10 \
     click \
     ruamel.yaml \
-    slivka::slivka \
+    "slivka::slivka=${SLIVKA_VERSION}" \
     && micromamba clean --all --yes
 
 # Clone the installer repository with submodules

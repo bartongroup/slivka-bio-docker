@@ -1,0 +1,597 @@
+{
+  "date": "2026-11-20",
+  "baseline_index": "sha256:34dc4fa708dd353e6c750ea986c91ea4a7aa66e4350d048bc5502f1baccf4040",
+  "framework_ref": "e455b6370b2c9469dd1331be70b5b0e3835646bd",
+  "tracks": {
+    "slivka-0.8.3b4-r1": {
+      "arm64": {
+        "framework_version": "0.8.3b4",
+        "tested_at": "2026-11-20T13:43:03.271250+00:00",
+        "status": "passed",
+        "api_smoke": "passed",
+        "passed_services": [
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4"
+        ],
+        "missing_services": [
+          "disembl-1.4",
+          "globplot-2.3",
+          "tcoffee-13.41.0"
+        ],
+        "unexpected_missing_services": []
+      },
+      "amd64": {
+        "framework_version": "0.8.3b4",
+        "tested_at": "2026-11-20T13:45:33.956499+00:00",
+        "status": "passed",
+        "api_smoke": "passed",
+        "passed_services": [
+          "disembl-1.4",
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "globplot-2.3",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4",
+          "tcoffee-13.41.0"
+        ],
+        "missing_services": [],
+        "unexpected_missing_services": []
+      }
+    },
+    "slivka-0.8.5b9-rc1": {
+      "arm64": {
+        "framework_version": "0.8.5b9",
+        "tested_at": "2026-11-20T13:43:41.279657+00:00",
+        "status": "passed",
+        "api_smoke": "passed",
+        "passed_services": [
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4"
+        ],
+        "missing_services": [
+          "disembl-1.4",
+          "globplot-2.3",
+          "tcoffee-13.41.0"
+        ],
+        "unexpected_missing_services": []
+      },
+      "amd64": {
+        "framework_version": "0.8.5b9",
+        "tested_at": "2026-11-20T13:46:41.774918+00:00",
+        "status": "passed",
+        "api_smoke": "passed",
+        "passed_services": [
+          "disembl-1.4",
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "globplot-2.3",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4",
+          "tcoffee-13.41.0"
+        ],
+        "missing_services": [],
+        "unexpected_missing_services": []
+      }
+    }
+  },
+  "migrations": {
+    "arm64": {
+      "baseline": "slivka-bio:slivka-0.8.3b4-r1",
+      "candidate": "slivka-bio:slivka-0.8.5b9-rc1",
+      "host": "arm64",
+      "upgrade": "passed",
+      "rollback": "passed",
+      "status": "passed",
+      "tested_at_unix": 1795182148
+    },
+    "amd64": {
+      "baseline": "localhost/slivka-bio:slivka-0.8.3b4-r1",
+      "candidate": "localhost/slivka-bio:slivka-0.8.5b9-rc1",
+      "host": "x86_64",
+      "upgrade": "passed",
+      "rollback": "passed",
+      "status": "passed",
+      "tested_at_unix": 1795182426
+    }
+  },
+  "upstream_runner_tests": {
+    "passed": 120,
+    "failed": 0,
+    "framework_version": "0.8.5b9",
+    "scope": "Pinned upstream test/runners against the installed wheel; mocked cluster APIs, not a live Slurm cluster."
+  },
+  "tool_inventory_unchanged": {
+    "arm64": {
+      "verified": true,
+      "environments": 9,
+      "services": [
+        "aacon-1.1.service.yaml",
+        "clustalo-1.2.4.service.yaml",
+        "clustalw-2.1.service.yaml",
+        "example.service.yaml",
+        "jronn-3.1b.service.yaml",
+        "msaprobs-0.9.7.service.yaml",
+        "muscle-3.8.1551.service.yaml",
+        "muscle-5.1.service.yaml",
+        "probcons-1.12.service.yaml",
+        "rnaalifold-2.6.4.service.yaml"
+      ]
+    },
+    "amd64": {
+      "verified": true,
+      "environments": 12,
+      "services": [
+        "aacon-1.1.service.yaml",
+        "clustalo-1.2.4.service.yaml",
+        "clustalw-2.1.service.yaml",
+        "disembl-1.4.service.yaml",
+        "example.service.yaml",
+        "globplot-2.3.service.yaml",
+        "jronn-3.1b.service.yaml",
+        "msaprobs-0.9.7.service.yaml",
+        "muscle-3.8.1551.service.yaml",
+        "muscle-5.1.service.yaml",
+        "probcons-1.12.service.yaml",
+        "rnaalifold-2.6.4.service.yaml",
+        "tcoffee-13.41.0.service.yaml"
+      ]
+    }
+  },
+  "publication": {
+    "status": "published",
+    "repository": "drsasp/slivka-bio",
+    "compatibility_tag": "slivka-0.8.3b4-r1",
+    "compatibility_digest": "sha256:34dc4fa708dd353e6c750ea986c91ea4a7aa66e4350d048bc5502f1baccf4040",
+    "candidate_tag": "slivka-0.8.5b9-rc1",
+    "candidate_digest": "sha256:a55d53df14fddb6d202d01cd0cffa00f85beb7673488760fd5d261b9b1801f4b",
+    "recipe_revision": "4574831402cd8b1e8c87a088f0939ded70f79771",
+    "unchanged_tags": [
+      "latest",
+      "dev",
+      "test"
+    ],
+    "platform_manifests": [
+      {
+        "digest": "sha256:0a21be1a8e6cfabeceea94110183dcde7724175c489af1536b9085b1f4f61144",
+        "platform": {
+          "architecture": "amd64",
+          "os": "linux"
+        }
+      },
+      {
+        "digest": "sha256:8696eb40858922fb322c1b686a390866512ff54c5d0c1b37dcf5164d5c538038",
+        "platform": {
+          "architecture": "arm64",
+          "os": "linux"
+        }
+      },
+      {
+        "digest": "sha256:2b0b0798677a3300d3168466eb551b03b94858be5469542d4e1cc0b760f46904",
+        "platform": {
+          "architecture": "unknown",
+          "os": "unknown"
+        }
+      },
+      {
+        "digest": "sha256:dc63f2e7df0bed36a3a8840a295d441e1f9f2153fbe727b6a57feb4839072d63",
+        "platform": {
+          "architecture": "unknown",
+          "os": "unknown"
+        }
+      }
+    ]
+  },
+  "published_image_validation": {
+    "arm64": {
+      "service_tests": {
+        "image": "docker.io/drsasp/slivka-bio:slivka-0.8.5b9-rc1",
+        "image_tag": "slivka-0.8.5b9-rc1",
+        "platform": "linux/arm64",
+        "tested_at": "2026-11-20T13:51:13.609779+00:00",
+        "expected_services": [
+          "disembl-1.4",
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "globplot-2.3",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4",
+          "tcoffee-13.41.0"
+        ],
+        "installed_services": [
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4"
+        ],
+        "passed_services": [
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4"
+        ],
+        "failed_services": [],
+        "missing_services": [
+          "disembl-1.4",
+          "globplot-2.3",
+          "tcoffee-13.41.0"
+        ],
+        "allowed_missing_services": [
+          "disembl-1.4",
+          "globplot-2.3",
+          "tcoffee-13.41.0"
+        ],
+        "unexpected_missing_services": [],
+        "api_smoke": "passed",
+        "framework_version": "0.8.5b9",
+        "status": "passed",
+        "results": [
+          {
+            "service": "disembl-1.4",
+            "status": "missing",
+            "exit_code": 0,
+            "installed": false,
+            "reason": "service file is not installed",
+            "ok_count": 0,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/disembl-1.4.log"
+          },
+          {
+            "service": "aacon-1.1",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/aacon-1.1.log"
+          },
+          {
+            "service": "clustalo-1.2.4",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/clustalo-1.2.4.log"
+          },
+          {
+            "service": "clustalw-2.1",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/clustalw-2.1.log"
+          },
+          {
+            "service": "globplot-2.3",
+            "status": "missing",
+            "exit_code": 0,
+            "installed": false,
+            "reason": "service file is not installed",
+            "ok_count": 0,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/globplot-2.3.log"
+          },
+          {
+            "service": "jronn-3.1b",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/jronn-3.1b.log"
+          },
+          {
+            "service": "msaprobs-0.9.7",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/msaprobs-0.9.7.log"
+          },
+          {
+            "service": "muscle-3.8.1551",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/muscle-3.8.1551.log"
+          },
+          {
+            "service": "muscle-5.1",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/muscle-5.1.log"
+          },
+          {
+            "service": "probcons-1.12",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/probcons-1.12.log"
+          },
+          {
+            "service": "rnaalifold-2.6.4",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/rnaalifold-2.6.4.log"
+          },
+          {
+            "service": "tcoffee-13.41.0",
+            "status": "missing",
+            "exit_code": 0,
+            "installed": false,
+            "reason": "service file is not installed",
+            "ok_count": 0,
+            "problem_count": 0,
+            "log": "/tmp/slivka-published-tests-arm64/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-arm64/tcoffee-13.41.0.log"
+          }
+        ]
+      },
+      "migration_and_rollback": {
+        "baseline": "slivka-bio:slivka-0.8.3b4-r1",
+        "candidate": "docker.io/drsasp/slivka-bio:slivka-0.8.5b9-rc1",
+        "host": "arm64",
+        "upgrade": "passed",
+        "rollback": "passed",
+        "status": "passed",
+        "tested_at_unix": 1795182729
+      },
+      "pulled_digests": [
+        "drsasp/slivka-bio@sha256:a55d53df14fddb6d202d01cd0cffa00f85beb7673488760fd5d261b9b1801f4b"
+      ],
+      "tool_inventory_unchanged": true
+    },
+    "amd64": {
+      "service_tests": {
+        "image": "docker.io/drsasp/slivka-bio:slivka-0.8.5b9-rc1",
+        "image_tag": "slivka-0.8.5b9-rc1",
+        "platform": "linux/amd64",
+        "tested_at": "2026-11-20T13:51:51.119817+00:00",
+        "expected_services": [
+          "disembl-1.4",
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "globplot-2.3",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4",
+          "tcoffee-13.41.0"
+        ],
+        "installed_services": [
+          "disembl-1.4",
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "globplot-2.3",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4",
+          "tcoffee-13.41.0"
+        ],
+        "passed_services": [
+          "disembl-1.4",
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "globplot-2.3",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4",
+          "tcoffee-13.41.0"
+        ],
+        "failed_services": [],
+        "missing_services": [],
+        "allowed_missing_services": [],
+        "unexpected_missing_services": [],
+        "api_smoke": "passed",
+        "framework_version": "0.8.5b9",
+        "status": "passed",
+        "results": [
+          {
+            "service": "disembl-1.4",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/disembl-1.4.log"
+          },
+          {
+            "service": "aacon-1.1",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/aacon-1.1.log"
+          },
+          {
+            "service": "clustalo-1.2.4",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/clustalo-1.2.4.log"
+          },
+          {
+            "service": "clustalw-2.1",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/clustalw-2.1.log"
+          },
+          {
+            "service": "globplot-2.3",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/globplot-2.3.log"
+          },
+          {
+            "service": "jronn-3.1b",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/jronn-3.1b.log"
+          },
+          {
+            "service": "msaprobs-0.9.7",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/msaprobs-0.9.7.log"
+          },
+          {
+            "service": "muscle-3.8.1551",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/muscle-3.8.1551.log"
+          },
+          {
+            "service": "muscle-5.1",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/muscle-5.1.log"
+          },
+          {
+            "service": "probcons-1.12",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/probcons-1.12.log"
+          },
+          {
+            "service": "rnaalifold-2.6.4",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/rnaalifold-2.6.4.log"
+          },
+          {
+            "service": "tcoffee-13.41.0",
+            "status": "passed",
+            "exit_code": 0,
+            "installed": true,
+            "reason": "service test reported OK",
+            "ok_count": 1,
+            "problem_count": 0,
+            "log": "release-tests/published/docker.io-drsasp-slivka-bio-slivka-0.8.5b9-rc1/linux-amd64/tcoffee-13.41.0.log"
+          }
+        ]
+      },
+      "migration_and_rollback": {
+        "baseline": "localhost/slivka-bio:slivka-0.8.3b4-r1",
+        "candidate": "docker.io/drsasp/slivka-bio:slivka-0.8.5b9-rc1",
+        "host": "x86_64",
+        "upgrade": "passed",
+        "rollback": "passed",
+        "status": "passed",
+        "tested_at_unix": 1795182736
+      },
+      "pulled_digests": [
+        "docker.io/drsasp/slivka-bio@sha256:0a21be1a8e6cfabeceea94110183dcde7724175c489af1536b9085b1f4f61144",
+        "docker.io/drsasp/slivka-bio@sha256:a55d53df14fddb6d202d01cd0cffa00f85beb7673488760fd5d261b9b1801f4b"
+      ],
+      "tool_inventory_unchanged": true
+    }
+  }
+}

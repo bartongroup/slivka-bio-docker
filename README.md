@@ -8,6 +8,9 @@ This repository contains the Docker configuration for setting up `slivka-bio`. Y
 
 ## Overview
 
+Versioned framework builds, native release tests, and existing-data migration
+instructions are documented in [releases/README.md](releases/README.md).
+
 `slivka-bio` is a pre-configured instance of a `slivka` server bundled with tools for bioinformatics applications. This Dockerized setup includes `slivka-bio` and MongoDB for data storage.
 
 You can find out more about what `slivka` is and how to use it:

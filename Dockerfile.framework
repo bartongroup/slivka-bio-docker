@@ -1,0 +1,36 @@
+# Upgrade only the framework; keep the released tools and service patches intact.
+ARG BASE_IMAGE=drsasp/slivka-bio@sha256:34dc4fa708dd353e6c750ea986c91ea4a7aa66e4350d048bc5502f1baccf4040
+FROM ${BASE_IMAGE} AS framework-wheel
+ARG SLIVKA_FRAMEWORK_REPO=https://github.com/bartongroup/slivka
+ARG SLIVKA_FRAMEWORK_REF=e455b6370b2c9469dd1331be70b5b0e3835646bd
+ADD https://codeload.github.com/bartongroup/slivka/tar.gz/${SLIVKA_FRAMEWORK_REF} /tmp/framework.tar.gz
+RUN /opt/conda/envs/slivka-installer/bin/python -m pip wheel \
+    --no-cache-dir --no-deps --wheel-dir /tmp/wheels /tmp/framework.tar.gz
+
+FROM ${BASE_IMAGE}
+ARG BASE_IMAGE
+ARG SLIVKA_FRAMEWORK_REPO=https://github.com/bartongroup/slivka
+ARG SLIVKA_FRAMEWORK_REF=e455b6370b2c9469dd1331be70b5b0e3835646bd
+ARG SLIVKA_FRAMEWORK_VERSION=0.8.5b9
+ARG SLIVKA_BIO_DOCKER_REVISION=unknown
+ARG SLIVKA_BIO_DOCKER_DIRTY=unknown
+ARG SLIVKA_BIO_DOCKER_SOURCE=https://github.com/bartongroup/slivka-bio-docker
+LABEL org.opencontainers.image.source=$SLIVKA_BIO_DOCKER_SOURCE \
+      org.opencontainers.image.revision=$SLIVKA_BIO_DOCKER_REVISION \
+      org.opencontainers.image.title="slivka-bio" \
+      org.opencontainers.image.version=$SLIVKA_FRAMEWORK_VERSION \
+      org.bartongroup.slivka-bio.base=$BASE_IMAGE \
+      org.bartongroup.slivka-bio.framework.repo=$SLIVKA_FRAMEWORK_REPO \
+      org.bartongroup.slivka-bio.framework.ref=$SLIVKA_FRAMEWORK_REF \
+      org.bartongroup.slivka-bio.framework.version=$SLIVKA_FRAMEWORK_VERSION \
+      org.bartongroup.slivka-bio-docker.dirty=$SLIVKA_BIO_DOCKER_DIRTY
+USER root
+COPY --from=framework-wheel /tmp/wheels /tmp/wheels
+COPY releases/framework-constraints.txt /tmp/framework-constraints.txt
+RUN /opt/conda/envs/slivka-installer/bin/python -m pip install --no-cache-dir -c /tmp/framework-constraints.txt /tmp/wheels/slivka-*.whl \
+    && /opt/conda/envs/slivka-installer/bin/python -m pip check \
+    && /opt/conda/envs/slivka-installer/bin/python -c "from importlib.metadata import version; assert version('slivka') == '${SLIVKA_FRAMEWORK_VERSION}'" \
+    && rm -rf /tmp/wheels /tmp/framework-constraints.txt
+COPY releases/image-inventory.py /tmp/image-inventory.py
+RUN /opt/conda/envs/slivka-installer/bin/python /tmp/image-inventory.py > /opt/slivka/build-info.json \
+    && rm /tmp/image-inventory.py
