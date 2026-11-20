@@ -10,6 +10,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR" && pwd)"
 OUTPUT_DIR="$PROJECT_DIR/release-tests"
 COMPOSE=(docker compose)
+TEST_PROJECT="slivka-release-$(date +%s)-$$"
+COMPOSE+=(-f "$SCRIPT_DIR/compose.release-test.yml" -p "$TEST_PROJECT")
 KEEP_RUNNING=false
 PULL_IMAGE=false
 START_TIMEOUT=120
@@ -42,6 +44,7 @@ Options:
   -o, --output-dir <path>  Directory for JSON summaries and per-service logs.
                            Default: $OUTPUT_DIR
       --pull               Pull the image before starting compose.
+      --allow-missing ID   Explicitly accept an unavailable service on this architecture.
       --keep-running       Leave compose services running after tests finish.
       --timeout <seconds>  Seconds to wait for slivka-bio container startup. Default: $START_TIMEOUT
   -h, --help               Show this help.
@@ -55,6 +58,7 @@ EOF
 
 declare -a IMAGE_REFS=()
 declare -a SERVICES=()
+declare -a ALLOWED_MISSING=()
 
 while [[ ${1:-} ]]; do
   case "$1" in
@@ -69,6 +73,10 @@ while [[ ${1:-} ]]; do
     --pull)
       PULL_IMAGE=true
       shift
+      ;;
+    --allow-missing)
+      ALLOWED_MISSING+=("$2")
+      shift 2
       ;;
     --keep-running)
       KEEP_RUNNING=true
@@ -133,6 +141,7 @@ compose() {
 compose_down() {
   compose down -v --remove-orphans >/dev/null 2>&1 || true
 }
+trap 'if [[ "$KEEP_RUNNING" != true ]]; then compose_down; fi' EXIT
 
 compose_up() {
   # Keep this portable for Docker Compose and podman-compose. The app image is
@@ -144,14 +153,8 @@ container_id() {
   local cid
   local service
   local name
-  cid="$(compose ps -q slivka-bio 2>/dev/null || true)"
-  if [[ -n "$cid" ]]; then
-    printf '%s\n' "$cid"
-    return
-  fi
-
-  # podman-compose 1.5 does not accept service names for `ps`; inspect all
-  # project containers and match the Slivka service by labels/name.
+  # podman-compose 1.5 can ignore the service filter and return both IDs;
+  # always inspect project containers and select the application explicitly.
   for cid in $(compose ps -q 2>/dev/null || true); do
     service="$(
       docker inspect "$cid" --format '{{ index .Config.Labels "com.docker.compose.service" }} {{ index .Config.Labels "io.podman.compose.service" }}' 2>/dev/null || true
@@ -163,7 +166,8 @@ container_id() {
     fi
   done
 
-  docker ps -q --filter name='slivka-bio' | head -n 1
+  # Never fall back to an unrelated application's container.
+  return 1
 }
 
 wait_for_slivka_container() {
@@ -273,10 +277,12 @@ write_summary() {
   local platform="$4"
   local status_file="$5"
 
-  python3 - "$summary_file" "$image_ref" "$tag" "$platform" "$status_file" "${SERVICES[@]}" <<'PY'
+  SLIVKA_ALLOWED_MISSING="$(printf '%s\n' "${ALLOWED_MISSING[@]}")" python3 - "$summary_file" "$image_ref" "$tag" "$platform" "$status_file" "${SERVICES[@]}" <<'PY'
 import json
+import os
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
 summary_file, image_ref, tag, platform, status_file, *expected = sys.argv[1:]
 
@@ -301,6 +307,16 @@ with open(status_file, encoding="utf-8") as handle:
         else:
             failed.append(item["service"])
 
+allowed_missing = os.environ.get('SLIVKA_ALLOWED_MISSING', '').split()
+artifact_dir = Path(summary_file).parent
+def read_artifact(name):
+    try:
+        return json.loads((artifact_dir / name).read_text())
+    except (OSError, ValueError):
+        return None
+smoke = read_artifact('api-smoke.json')
+inventory = read_artifact('inventory.json')
+unexpected_missing = sorted(set(missing) - set(allowed_missing))
 summary = {
     "image": image_ref,
     "image_tag": tag,
@@ -311,6 +327,11 @@ summary = {
     "passed_services": passed,
     "failed_services": failed,
     "missing_services": missing,
+    "allowed_missing_services": allowed_missing,
+    "unexpected_missing_services": unexpected_missing,
+    "api_smoke": "passed" if smoke and smoke.get('output_hashes') else "failed",
+    "framework_version": inventory and inventory.get('framework_version'),
+    "status": "passed" if not failed and not unexpected_missing and smoke and smoke.get('output_hashes') and inventory else "failed",
     "results": results,
 }
 
@@ -371,6 +392,13 @@ PY
   fi
 
   platform="$(inspect_platform "$image_ref")"
+  native_arch="$(uname -m)"
+  case "$native_arch" in arm64|aarch64) native_arch=arm64;; x86_64) native_arch=amd64;; esac
+  if [[ "$platform" != "linux/$native_arch" && "$platform" != "linux/$native_arch/"* ]]; then
+    echo "Refusing emulated tests: image=$platform host=$native_arch" >&2
+    overall_status=1
+    continue
+  fi
   platform_name="$(safe_name "${platform:-unknown-platform}")"
   tag_output_dir="$OUTPUT_DIR/$run_name/$platform_name"
   status_file="$tag_output_dir/status.jsonl"
@@ -405,6 +433,13 @@ PY
     overall_status=1
   fi
 
+  cid="$(container_id || true)"
+  if [[ -n "$cid" ]]; then
+    docker image inspect "$image_ref" > "$tag_output_dir/image-inspect.json"
+    docker exec -i "$cid" /opt/conda/envs/slivka-installer/bin/python < "$SCRIPT_DIR/releases/image-inventory.py" > "$tag_output_dir/inventory.json" || overall_status=1
+    docker exec -i "$cid" /opt/conda/envs/slivka-installer/bin/python < "$SCRIPT_DIR/releases/api-smoke.py" > "$tag_output_dir/api-smoke.json" 2> "$tag_output_dir/api-smoke.stderr" || overall_status=1
+  fi
+
   for service in "${SERVICES[@]}"; do
     log_file="$tag_output_dir/${service}.log"
     echo "Testing service: $service"
@@ -424,7 +459,13 @@ PY
       classify_service_log "$service" "$log_file" "$exit_code" "$installed"
     )
 
-    if [[ "$status" != "passed" ]]; then
+    allowed=false
+    if [[ "$status" == missing && ${#ALLOWED_MISSING[@]} -gt 0 ]]; then
+      for unavailable in "${ALLOWED_MISSING[@]}"; do
+        [[ "$service" != "$unavailable" ]] || allowed=true
+      done
+    fi
+    if [[ "$status" != "passed" && "$allowed" != true ]]; then
       overall_status=1
     fi
 
