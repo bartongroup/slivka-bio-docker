@@ -1,0 +1,168 @@
+{
+  "date": "2026-11-20",
+  "baseline_index": "sha256:34dc4fa708dd353e6c750ea986c91ea4a7aa66e4350d048bc5502f1baccf4040",
+  "framework_ref": "e455b6370b2c9469dd1331be70b5b0e3835646bd",
+  "tracks": {
+    "slivka-0.8.3b4-r1": {
+      "arm64": {
+        "framework_version": "0.8.3b4",
+        "tested_at": "2026-11-20T13:43:03.271250+00:00",
+        "status": "passed",
+        "api_smoke": "passed",
+        "passed_services": [
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4"
+        ],
+        "missing_services": [
+          "disembl-1.4",
+          "globplot-2.3",
+          "tcoffee-13.41.0"
+        ],
+        "unexpected_missing_services": []
+      },
+      "amd64": {
+        "framework_version": "0.8.3b4",
+        "tested_at": "2026-11-20T13:45:33.956499+00:00",
+        "status": "passed",
+        "api_smoke": "passed",
+        "passed_services": [
+          "disembl-1.4",
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "globplot-2.3",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4",
+          "tcoffee-13.41.0"
+        ],
+        "missing_services": [],
+        "unexpected_missing_services": []
+      }
+    },
+    "slivka-0.8.5b9-rc1": {
+      "arm64": {
+        "framework_version": "0.8.5b9",
+        "tested_at": "2026-11-20T13:43:41.279657+00:00",
+        "status": "passed",
+        "api_smoke": "passed",
+        "passed_services": [
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4"
+        ],
+        "missing_services": [
+          "disembl-1.4",
+          "globplot-2.3",
+          "tcoffee-13.41.0"
+        ],
+        "unexpected_missing_services": []
+      },
+      "amd64": {
+        "framework_version": "0.8.5b9",
+        "tested_at": "2026-11-20T13:46:41.774918+00:00",
+        "status": "passed",
+        "api_smoke": "passed",
+        "passed_services": [
+          "disembl-1.4",
+          "aacon-1.1",
+          "clustalo-1.2.4",
+          "clustalw-2.1",
+          "globplot-2.3",
+          "jronn-3.1b",
+          "msaprobs-0.9.7",
+          "muscle-3.8.1551",
+          "muscle-5.1",
+          "probcons-1.12",
+          "rnaalifold-2.6.4",
+          "tcoffee-13.41.0"
+        ],
+        "missing_services": [],
+        "unexpected_missing_services": []
+      }
+    }
+  },
+  "migrations": {
+    "arm64": {
+      "baseline": "slivka-bio:slivka-0.8.3b4-r1",
+      "candidate": "slivka-bio:slivka-0.8.5b9-rc1",
+      "host": "arm64",
+      "upgrade": "passed",
+      "rollback": "passed",
+      "status": "passed",
+      "tested_at_unix": 1795182148
+    },
+    "amd64": {
+      "baseline": "localhost/slivka-bio:slivka-0.8.3b4-r1",
+      "candidate": "localhost/slivka-bio:slivka-0.8.5b9-rc1",
+      "host": "x86_64",
+      "upgrade": "passed",
+      "rollback": "passed",
+      "status": "passed",
+      "tested_at_unix": 1795182426
+    }
+  },
+  "upstream_runner_tests": {
+    "passed": 120,
+    "failed": 0,
+    "framework_version": "0.8.5b9",
+    "scope": "Pinned upstream test/runners against the installed wheel; mocked cluster APIs, not a live Slurm cluster."
+  },
+  "tool_inventory_unchanged": {
+    "arm64": {
+      "verified": true,
+      "environments": 9,
+      "services": [
+        "aacon-1.1.service.yaml",
+        "clustalo-1.2.4.service.yaml",
+        "clustalw-2.1.service.yaml",
+        "example.service.yaml",
+        "jronn-3.1b.service.yaml",
+        "msaprobs-0.9.7.service.yaml",
+        "muscle-3.8.1551.service.yaml",
+        "muscle-5.1.service.yaml",
+        "probcons-1.12.service.yaml",
+        "rnaalifold-2.6.4.service.yaml"
+      ]
+    },
+    "amd64": {
+      "verified": true,
+      "environments": 12,
+      "services": [
+        "aacon-1.1.service.yaml",
+        "clustalo-1.2.4.service.yaml",
+        "clustalw-2.1.service.yaml",
+        "disembl-1.4.service.yaml",
+        "example.service.yaml",
+        "globplot-2.3.service.yaml",
+        "jronn-3.1b.service.yaml",
+        "msaprobs-0.9.7.service.yaml",
+        "muscle-3.8.1551.service.yaml",
+        "muscle-5.1.service.yaml",
+        "probcons-1.12.service.yaml",
+        "rnaalifold-2.6.4.service.yaml",
+        "tcoffee-13.41.0.service.yaml"
+      ]
+    }
+  },
+  "publication": {
+    "status": "blocked",
+    "reason": "Docker Hub rejected writing the compatibility tag with insufficient_scope. Neither new tag was published; latest is retained."
+  }
+}

@@ -4,12 +4,19 @@ import json
 from pathlib import Path
 
 environments = {}
-for environment in sorted(Path('/opt/conda/envs').iterdir()):
+environment_paths = [
+    environment
+    for base in (Path('/opt/conda/envs'), Path('/opt/slivka/conda_envs'))
+    if base.is_dir()
+    for environment in base.iterdir()
+    if environment.is_dir()
+]
+for environment in sorted(environment_paths):
     packages = []
     for metadata in sorted((environment / 'conda-meta').glob('*.json')):
         package = json.loads(metadata.read_text())
         packages.append({key: package.get(key) for key in ('name', 'version', 'build', 'subdir')})
-    environments[environment.name] = packages
+    environments[str(environment)] = packages
 
 print(json.dumps({
     'framework_version': importlib.metadata.version('slivka'),

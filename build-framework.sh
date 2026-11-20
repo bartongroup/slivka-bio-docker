@@ -6,6 +6,7 @@ source "$SCRIPT_DIR/releases/framework.env"
 PLATFORMS=""
 PUSH=false
 LOAD=false
+OCI_ARCHIVE=""
 TAG="slivka-bio:${CANDIDATE_TAG}"
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -13,12 +14,16 @@ while [[ $# -gt 0 ]]; do
     --tag) TAG="$2"; shift 2;;
     --push) PUSH=true; shift;;
     --load) LOAD=true; shift;;
+    --oci-archive) OCI_ARCHIVE="$2"; shift 2;;
     --help|-h)
-      echo "Usage: $0 [--tag IMAGE:TAG] [--platform linux/arm64[,linux/amd64]] [--load|--push]"
+      echo "Usage: $0 [--tag IMAGE:TAG] [--platform linux/arm64[,linux/amd64]] [--load|--push|--oci-archive PATH]"
       exit 0;;
     *) echo "Unknown option: $1" >&2; exit 1;;
   esac
 done
+if [[ -n "$OCI_ARCHIVE" && ( "$PUSH" == true || "$LOAD" == true ) ]]; then
+  echo '--oci-archive cannot be combined with --push or --load.' >&2; exit 1
+fi
 if [[ "$PUSH" == true ]]; then
   [[ "$LOAD" == false && -n "$PLATFORMS" ]] || { echo 'Push requires --platform and cannot use --load.' >&2; exit 1; }
   [[ -z "$(git -C "$SCRIPT_DIR" status --porcelain)" ]] || { echo 'Commit the release inputs before publishing.' >&2; exit 1; }
@@ -42,5 +47,6 @@ CMD=(docker buildx build -f "$SCRIPT_DIR/Dockerfile.framework" -t "$TAG"
 [[ -z "$PLATFORMS" ]] || CMD+=(--platform "$PLATFORMS")
 [[ "$PUSH" == false ]] || CMD+=(--push)
 [[ "$LOAD" == false ]] || CMD+=(--load)
+[[ -z "$OCI_ARCHIVE" ]] || CMD+=(--output "type=oci,dest=$OCI_ARCHIVE")
 CMD+=("$SCRIPT_DIR")
 "${CMD[@]}"

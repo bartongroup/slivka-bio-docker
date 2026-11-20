@@ -37,6 +37,13 @@ python3 test-framework-migration.py \
   --output-dir release-tests/migration-arm64
 ```
 
+To prepare a multi-platform artifact without registry access:
+
+```sh
+./build-framework.sh --platform linux/amd64,linux/arm64 \
+  --oci-archive /tmp/slivka-0.8.5b9-rc1.oci.tar
+```
+
 Run the equivalent checks on a native AMD64 host without `--allow-missing`.
 Tests refuse images of the wrong architecture. They use uniquely named disposable
 containers, networks and volumes, no published ports, and a pinned MongoDB 7.0

@@ -263,6 +263,8 @@ classify_service_log() {
 
   if [[ "$problem_count" -gt 0 ]]; then
     printf 'failed\tservice test reported FAIL/WARN/N/A\t%s\t%s\t%s\n' "$ok_count" "$problem_count" "$exit_code"
+  elif [[ "$exit_code" -ne 0 ]]; then
+    printf 'failed\tservice test exited nonzero\t%s\t%s\t%s\n' "$ok_count" "$problem_count" "$exit_code"
   elif [[ "$ok_count" -gt 0 ]]; then
     printf 'passed\tservice test reported OK\t%s\t%s\t%s\n' "$ok_count" "$problem_count" "$exit_code"
   else
@@ -406,6 +408,7 @@ PY
 
   mkdir -p "$tag_output_dir"
   : > "$status_file"
+  rm -f "$summary_file" "$tag_output_dir/api-smoke.json" "$tag_output_dir/api-smoke.stderr" "$tag_output_dir/inventory.json" "$tag_output_dir/image-inspect.json"
 
   echo "Platform: ${platform:-unknown}"
   echo "Output: $summary_file"
